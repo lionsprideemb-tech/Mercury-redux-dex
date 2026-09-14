@@ -29,14 +29,11 @@ Approved entries that do not yet have a final source binding are intentionally s
 
 ## GitHub Pages deployment
 
-1. Create a repository (suggested name: `mercury-redux-dex`).
-2. Put the contents of this folder at the repository root.
-3. In GitHub: **Settings → Pages → Deploy from a branch → `main` / root**.
-4. Save. The site will be available from the repository's GitHub Pages URL after deployment finishes.
+The repository includes a GitHub Pages deployment workflow. Once the complete generated payload is present, pushes to `main` deploy the site automatically.
 
 ## Updating the data
 
-`data/pokedex.json` is the generated Mercury data snapshot. Future Mercury source checkpoints should regenerate this file and the relevant `assets/sprites/` files rather than manually editing hundreds of entries.
+`data/pokedex.json.gz` is the generated Mercury data snapshot. Future Mercury source checkpoints should regenerate this file and the sprite atlases rather than manually editing hundreds of entries.
 
 ## Project note
 
