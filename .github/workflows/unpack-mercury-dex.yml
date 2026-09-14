@@ -1,0 +1,63 @@
+name: Unpack Mercury Dex site bundle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find uploaded Mercury Dex ZIP
+        id: bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE_ZIP="$(find . -maxdepth 1 -type f -name '*.zip' -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          if [ -z "${SITE_ZIP:-}" ]; then
+            echo "No root-level ZIP found. Upload the Mercury Dex site ZIP to the repository root."
+            exit 1
+          fi
+          echo "zip=$SITE_ZIP" >> "$GITHUB_OUTPUT"
+          echo "Using $SITE_ZIP"
+
+      - name: Expand site bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .site_unpack
+          mkdir .site_unpack
+          unzip -q "${{ steps.bundle.outputs.zip }}" -d .site_unpack
+          # Copy only the known static-site payload. Keep .github and the uploaded ZIP intact.
+          for item in index.html 404.html README.md app.js styles.css .nojekyll assets data; do
+            if [ -e ".site_unpack/$item" ]; then
+              rm -rf "$item"
+              cp -a ".site_unpack/$item" "$item"
+            fi
+          done
+          rm -rf .site_unpack
+
+      - name: Commit expanded site assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html 404.html README.md app.js styles.css .nojekyll assets data
+          if git diff --cached --quiet; then
+            echo "Site assets are already current."
+            exit 0
+          fi
+          git commit -m "Expand Mercury Dex site bundle"
+          git push
