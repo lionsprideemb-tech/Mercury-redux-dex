@@ -10,9 +10,9 @@ const displayId=p=>p.nationalDex?`#${String(p.nationalDex).padStart(4,'0')}`:(p.
 const hasSprite=p=>Boolean(p.spriteAtlas);
 const atlasStyle=p=>{const a=p.spriteAtlas;if(!a)return '';return `background-image:url('${a.sheet}');background-position:-${a.x}px -${a.y}px;`;};
 const spriteMarkup=(p,cls='',label='')=>p.spriteAtlas?`<span class="atlas-sprite ${cls}" role="img" aria-label="${escapeHtml(label||p.displayName||p.name)} sprite" style="${atlasStyle(p)}"></span>`:'';
-async function loadPokedexPayload(){
-  const res=await fetch('data/pokedex.json.gz');
-  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+async function gunzipJson(url){
+  const res=await fetch(url);
+  if(!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
   const buf=await res.arrayBuffer(), u8=new Uint8Array(buf);
   if(u8[0]===0x1f&&u8[1]===0x8b){
     if(!('DecompressionStream' in window)) throw new Error('This browser cannot open the compressed Pokédex database. Please use a current Safari, Chrome, Edge, or Firefox version.');
@@ -20,6 +20,13 @@ async function loadPokedexPayload(){
     return await new Response(stream).json();
   }
   return JSON.parse(new TextDecoder().decode(buf));
+}
+async function loadPokedexPayload(){
+  const idxRes=await fetch('data/pokedex/index.json');
+  if(!idxRes.ok) throw new Error(`HTTP ${idxRes.status} loading Pokédex index`);
+  const idx=await idxRes.json();
+  const parts=await Promise.all(idx.shards.map(name=>gunzipJson(`data/pokedex/${name}`)));
+  return {meta:idx.meta||{},pokemon:parts.flatMap(x=>x.pokemon||[])};
 }
 const isCurrent=p=>!p.planned;
 
