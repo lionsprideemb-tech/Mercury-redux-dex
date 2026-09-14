@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'Mercury_Dex_Payload_R6_2026-09-14.zip'
       - 'index.html'
       - '404.html'
       - 'app.js'
@@ -33,20 +34,41 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Verify required Mercury Dex payload
+      - name: Prepare Mercury Dex site
         shell: bash
         run: |
           set -euo pipefail
-          test -f index.html
-          test -f app.js
-          test -f styles.css
-          test -f data/pokedex.json.gz
-          test -d assets/atlas
-          COUNT=$(find assets/atlas -type f -name 'sprites_*.png' | wc -l)
-          if [ "$COUNT" -lt 6 ]; then
-            echo "Expected six Mercury Dex sprite atlases, found $COUNT."
+          rm -rf _site
+          mkdir -p _site
+          if [ -f Mercury_Dex_Payload_R6_2026-09-14.zip ]; then
+            echo 'Using complete Mercury Dex R6 payload archive.'
+            unzip -q Mercury_Dex_Payload_R6_2026-09-14.zip -d _site
+          else
+            echo 'Payload archive not present yet; using repository files.'
+            cp -a index.html 404.html app.js styles.css .nojekyll _site/ 2>/dev/null || true
+            [ -d assets ] && cp -a assets _site/
+            [ -d data ] && cp -a data _site/
+          fi
+
+      - name: Verify complete Mercury Dex payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f _site/index.html
+          test -f _site/app.js
+          test -f _site/styles.css
+          test -f _site/data/pokedex/index.json
+          SHARDS=$(find _site/data/pokedex -maxdepth 1 -type f -name 'shard_*.json.gz.b64' | wc -l)
+          STRIPS=$(find _site/assets/atlas_strips -maxdepth 1 -type f -name '*.webp.b64' | wc -l)
+          if [ "$SHARDS" -ne 17 ]; then
+            echo "Expected 17 Mercury Dex data shards, found $SHARDS."
             exit 1
           fi
+          if [ "$STRIPS" -lt 21 ]; then
+            echo "Expected at least 21 Mercury sprite strips, found $STRIPS."
+            exit 1
+          fi
+          echo "Mercury Dex payload verified: $SHARDS data shards, $STRIPS sprite strips."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -54,7 +76,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
