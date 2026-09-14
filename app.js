@@ -10,24 +10,47 @@ const displayId=p=>p.nationalDex?`#${String(p.nationalDex).padStart(4,'0')}`:(p.
 const hasSprite=p=>Boolean(p.spriteAtlas);
 const atlasStyle=p=>{const a=p.spriteAtlas;if(!a)return '';return `background-image:url('${a.sheet}');background-position:-${a.x}px -${a.y}px;`;};
 const spriteMarkup=(p,cls='',label='')=>p.spriteAtlas?`<span class="atlas-sprite ${cls}" role="img" aria-label="${escapeHtml(label||p.displayName||p.name)} sprite" style="${atlasStyle(p)}"></span>`:'';
-async function gunzipJson(url){
+async function fetchBase64Bytes(url){
   const res=await fetch(url);
   if(!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
-  const buf=await res.arrayBuffer(), u8=new Uint8Array(buf);
+  const b64=(await res.text()).replace(/\s+/g,'');
+  const raw=atob(b64), out=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++) out[i]=raw.charCodeAt(i);
+  return out;
+}
+async function gunzipJson(url){
+  const u8=await fetchBase64Bytes(url);
   if(u8[0]===0x1f&&u8[1]===0x8b){
     if(!('DecompressionStream' in window)) throw new Error('This browser cannot open the compressed Pokédex database. Please use a current Safari, Chrome, Edge, or Firefox version.');
-    const stream=new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const stream=new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'));
     return await new Response(stream).json();
   }
-  return JSON.parse(new TextDecoder().decode(buf));
+  return JSON.parse(new TextDecoder().decode(u8));
 }
 async function loadPokedexPayload(){
   const idxRes=await fetch('data/pokedex/index.json');
   if(!idxRes.ok) throw new Error(`HTTP ${idxRes.status} loading Pokédex index`);
   const idx=await idxRes.json();
-  const parts=await Promise.all(idx.shards.map(name=>gunzipJson(`data/pokedex/${name}`)));
-  return {meta:idx.meta||{},pokemon:parts.flatMap(x=>x.pokemon||[])};
+  const parts=await Promise.all((idx.shards||[]).map(name=>gunzipJson(`data/pokedex/${name}`)));
+  const pokemon=parts.flatMap(x=>x.pokemon||[]);
+  await hydrateSpriteAtlases(pokemon);
+  return {meta:idx.meta||{},pokemon};
 }
+
+async function hydrateSpriteAtlases(pokemon){
+  const sheets=[...new Set(pokemon.map(p=>p.spriteAtlas?.sheet).filter(Boolean))];
+  const entries=await Promise.all(sheets.map(async sheet=>{
+    const bytes=await fetchBase64Bytes(`${sheet}.b64`);
+    const url=URL.createObjectURL(new Blob([bytes],{type:'image/webp'}));
+    return [sheet,url];
+  }));
+  const map=new Map(entries);
+  pokemon.forEach(p=>{
+    const sheet=p.spriteAtlas?.sheet;
+    if(sheet&&map.has(sheet)) p.spriteAtlas.sheet=map.get(sheet);
+  });
+}
+
 const isCurrent=p=>!p.planned;
 
 async function boot(){

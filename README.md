@@ -29,12 +29,12 @@ Approved entries that do not yet have a final source binding are intentionally s
 
 ## GitHub Pages deployment
 
-The repository includes a GitHub Pages deployment workflow. Once the complete generated payload is present, pushes to `main` deploy the site automatically.
+The repository deployment workflow accepts `Mercury_Dex_Payload_R6_2026-09-14.zip` at the repository root. The archive is unpacked automatically for GitHub Pages; no manual extraction is required.
 
 ## Updating the data
 
-`data/pokedex.json.gz` is the generated Mercury data snapshot. Future Mercury source checkpoints should regenerate this file and the sprite atlases rather than manually editing hundreds of entries.
+The generated payload uses 17 gzip+base64 Pokédex shards in `data/pokedex/` and base64 WebP sprite strips in `assets/atlas_strips/`. Future Mercury source checkpoints should regenerate these files rather than hand-editing roster entries.
 
 ## Project note
 
-Pokémon is © Nintendo / Creatures / GAME FREAK. Pokémon Mercury Redux and Mercury Dex are non-commercial fan-project tools.
+This site is a project-development reference generated from the current Mercury Redux authority. Entries marked **Pending Integration** are intentionally not represented as source-bound mechanics until their final bindings are recovered or implemented.

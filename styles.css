@@ -158,7 +158,7 @@ body.panel-open { overflow:hidden; }
 @media(max-width:390px){.dex-grid{grid-template-columns:1fr 1fr}.dex-card{min-height:208px}.sprite-well{height:104px}.card-sprite{width:92px;height:92px}.detail-hero{grid-template-columns:105px 1fr}.detail-sprite-well{width:105px;height:105px}.detail-sprite{width:96px;height:96px}}
 
 /* Sprite atlas rendering: keeps GitHub Pages fast while preserving pixel art. */
-.atlas-sprite{display:block;width:64px!important;height:64px!important;flex:0 0 64px;background-repeat:no-repeat;background-size:1024px 1024px;image-rendering:pixelated;transform-origin:center center;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
+.atlas-sprite{display:block;width:64px!important;height:64px!important;flex:0 0 64px;background-repeat:no-repeat;background-size:1024px 256px;image-rendering:pixelated;transform-origin:center center;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
 .card-sprite.atlas-sprite{transform:scale(1.7)}
 .detail-sprite.atlas-sprite{transform:scale(2.35)}
 .compare-chip .atlas-sprite{margin:-17px}
