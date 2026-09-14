@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#121018" />
+  <meta name="description" content="Mercury Dex — searchable Pokémon Mercury Redux Pokédex with stats, abilities, Innates, moves, forms, and project sprites." />
+  <title>Mercury Dex</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true"><span></span></div>
+        <div>
+          <div class="eyebrow">Pokémon Mercury Redux</div>
+          <h1>Mercury Dex</h1>
+          <p class="header-subtitle">The current Mercury roster, sprites, mechanics, and project status in one place.</p>
+        </div>
+      </div>
+      <div class="header-meta" id="headerMeta">Loading R6 authority…</div>
+    </header>
+
+    <main>
+      <section class="control-panel" aria-label="Pokédex filters">
+        <div class="search-row">
+          <label class="search-box">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="Search Pokémon, ability, move, type…" aria-label="Search Pokédex" />
+            <kbd>/</kbd>
+          </label>
+          <button id="filterToggle" class="secondary-btn mobile-filter-btn" type="button">Filters</button>
+          <button id="clearBtn" class="secondary-btn" type="button">Reset</button>
+        </div>
+
+        <div class="quick-tabs" id="statusTabs" role="tablist" aria-label="Roster status">
+          <button class="tab active" data-status="all" type="button">All <span id="tabAllCount"></span></button>
+          <button class="tab" data-status="current" type="button">Current <span id="tabCurrentCount"></span></button>
+          <button class="tab" data-status="planned" type="button">Pending <span id="tabPlannedCount"></span></button>
+          <button class="tab" data-status="favorites" type="button">★ Favorites <span id="tabFavoriteCount"></span></button>
+        </div>
+
+        <div class="filters" id="filtersPanel">
+          <label>Type
+            <select id="typeFilter"><option value="">All types</option></select>
+          </label>
+          <label>Roster
+            <select id="groupFilter">
+              <option value="">All entries</option>
+              <option value="Canonical">Canonical</option>
+              <option value="Addition">Mercury additions</option>
+            </select>
+          </label>
+          <label>Source
+            <select id="sourceFilter"><option value="">All sources</option></select>
+          </label>
+          <label>Class
+            <select id="classFilter"><option value="">All classes</option></select>
+          </label>
+          <label>Sort
+            <select id="sortSelect">
+              <option value="dex">Dex / project order</option>
+              <option value="name">Name A–Z</option>
+              <option value="bst-desc">BST high → low</option>
+              <option value="bst-asc">BST low → high</option>
+              <option value="newest">Mercury additions first</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="summary-strip" aria-live="polite">
+        <div><strong id="resultCount">0</strong><span>shown</span></div>
+        <div><strong id="sourceBoundCount">—</strong><span>source-bound</span></div>
+        <div><strong id="spriteCount">—</strong><span>sprites available</span></div>
+        <div><strong id="abilityCount">1,043</strong><span>ability IDs in R6</span></div>
+      </section>
+
+      <section class="dex-section">
+        <div id="emptyState" class="empty-state" hidden>
+          <div class="empty-orb"></div>
+          <h2>No matches</h2>
+          <p>Try clearing a filter or searching a broader term.</p>
+        </div>
+        <div id="dexGrid" class="dex-grid" aria-label="Pokédex results"></div>
+        <div class="load-wrap"><button id="loadMoreBtn" class="load-more" type="button" hidden>Load more</button></div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Mercury Dex</strong> is a project browser for Pokémon Mercury Redux. Data snapshot: R6 / R14-caught-up reconstruction. Pokémon is © Nintendo / Creatures / GAME FREAK. This is a non-commercial fan project.
+    </footer>
+  </div>
+
+  <div id="detailBackdrop" class="backdrop" hidden></div>
+  <aside id="detailPanel" class="detail-panel" aria-hidden="true" aria-label="Pokémon details">
+    <button id="detailClose" class="icon-btn detail-close" type="button" aria-label="Close details">×</button>
+    <div id="detailContent"></div>
+  </aside>
+
+  <div id="compareTray" class="compare-tray" hidden>
+    <div class="compare-slots" id="compareSlots"></div>
+    <button id="compareOpen" class="primary-btn" type="button">Compare</button>
+    <button id="compareClear" class="icon-btn" type="button" aria-label="Clear comparison">×</button>
+  </div>
+
+  <dialog id="compareDialog" class="compare-dialog">
+    <button id="compareClose" class="icon-btn dialog-close" type="button" aria-label="Close comparison">×</button>
+    <div id="compareContent"></div>
+  </dialog>
+
+  <template id="cardTemplate">
+    <article class="dex-card" tabindex="0">
+      <button class="favorite-btn" type="button" aria-label="Favorite Pokémon">☆</button>
+      <div class="card-id"></div>
+      <div class="sprite-well"><div class="sprite-placeholder" aria-hidden="true">?</div></div>
+      <div class="card-copy">
+        <h2 class="card-name"></h2>
+        <div class="type-row"></div>
+        <div class="card-bottom"><span class="card-status"></span><span class="card-bst"></span></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
