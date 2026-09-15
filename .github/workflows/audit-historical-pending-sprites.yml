@@ -1,0 +1,37 @@
+name: Audit historical pending sprites
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audit-historical-pending-sprites.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6452501eca2159b28706ef99795d3da68c414b31
+      - name: Audit R6 pending rows for atlas bindings
+        shell: python
+        run: |
+          import base64, gzip, json
+          from pathlib import Path
+          idx=json.loads(Path('data/pokedex/index.json').read_text())
+          rows=[]
+          for shard in idx['shards']:
+              raw=base64.b64decode(Path('data/pokedex',shard).read_text().strip())
+              if raw[:2]==b'\x1f\x8b': raw=gzip.decompress(raw)
+              rows.extend(json.loads(raw).get('pokemon',[]))
+          pending=[p for p in rows if p.get('planned')]
+          with_sprite=[p for p in pending if p.get('spriteAtlas')]
+          print('pending',len(pending))
+          print('pending_with_spriteAtlas',len(with_sprite))
+          print('pending_without_spriteAtlas',len(pending)-len(with_sprite))
+          for p in with_sprite:
+              print(p.get('key'), '|', p.get('displayName') or p.get('name'), '|', p.get('spriteAtlas'))
+          assert len(pending)==118, len(pending)
