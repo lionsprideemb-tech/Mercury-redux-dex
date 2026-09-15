@@ -29,10 +29,15 @@ jobs:
 
           root = Path('.')
           parts_dir = root / 'assets/atlas_strips/.open118_r8_parts'
-          parts = [parts_dir / f'part{i:02d}' for i in range(8)]
+          parts = [parts_dir / f'part{i:02d}' for i in range(5)] + [
+              parts_dir / 'part05',
+              parts_dir / 'part05_tail',
+              parts_dir / 'part06',
+              parts_dir / 'part07',
+          ]
           assert all(p.exists() for p in parts), [str(p) for p in parts if not p.exists()]
           sizes = [p.stat().st_size for p in parts]
-          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
+          assert sizes == [14500,14500,14500,14500,14500,10557,3943,14500,14472], sizes
 
           encoded = ''.join(p.read_text().strip() for p in parts)
           assert len(encoded) == 115972, len(encoded)
@@ -66,7 +71,6 @@ jobs:
           idx_path = root / 'data/pokedex/index.json'
           idx = json.loads(idx_path.read_text())
           overlays = idx.get('overlays', [])
-          # completion_overlay_r8 is the single mechanics authority for these 118.
           overlays = [x for x in overlays if x != 'design_completion_118.json.gz.b64']
           if 'completion_overlay_r8.json.gz.b64' not in overlays:
               overlays.append('completion_overlay_r8.json.gz.b64')
@@ -82,7 +86,6 @@ jobs:
           meta['historicalSpriteMasterRecoveryPending'] = 6
           meta['open118SpriteAtlas'] = 'assets/atlas_strips/open118_r8.webp'
           meta['open118SpriteAtlasSha256'] = expected
-          # R8 historical audit established zero of these 118 previously had atlas bindings.
           if isinstance(meta.get('spriteCount'), int):
               meta['spriteCount'] = 1429
           idx_path.write_text(json.dumps(idx, separators=(',',':'), ensure_ascii=False))
