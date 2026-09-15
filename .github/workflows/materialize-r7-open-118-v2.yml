@@ -1,0 +1,96 @@
+name: Materialize R7 open 118 v2
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/materialize-r7-open-118-v2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build full recovered 118 records from source-linked bases
+        shell: python
+        run: |
+          import base64,gzip,json
+          from pathlib import Path
+          root=Path('.')
+          idx=json.loads((root/'data/pokedex/index.json').read_text())
+          def load(path):
+              raw=base64.b64decode(Path(path).read_text().strip())
+              if raw[:2]==b'\x1f\x8b': raw=gzip.decompress(raw)
+              return json.loads(raw)
+          rows=[]
+          for n in idx['shards']: rows += load(root/'data/pokedex'/n).get('pokemon',[])
+          current=[json.loads(json.dumps(p)) for p in rows]
+          bykey={p.get('key'):p for p in current if p.get('key')}
+          for oname in idx.get('overlays',[]):
+              ov=load(root/'data/pokedex'/oname)
+              for item in ov.get('patches',[]):
+                  p=bykey.get(item.get('key'))
+                  if p is not None: p.update(item.get('set') or {})
+              for item in ov.get('additions',[]):
+                  k=item.get('key')
+                  if not k or k in bykey: continue
+                  p=dict(item);p.update(item.get('set') or {});p.pop('set',None);current.append(p);bykey[k]=p
+              rem=set(ov.get('removeKeys',[]));current=[p for p in current if p.get('key') not in rem];bykey={p.get('key'):p for p in current if p.get('key')}
+          byconst={}
+          byname={}
+          for p in current:
+              for k in ('constant','publicConstant','sourceConstant'):
+                  if p.get(k): byconst[p[k]]=p
+              for n in (p.get('displayName'),p.get('name')):
+                  if n: byname[n]=p
+          r7=load(root/'data/pokedex/review_overlay_r7.json.gz.b64')
+          ability_by_name={}
+          for p in current:
+              for g in ('primaryAbilities','innates','sourceAbilities'):
+                  for a in p.get(g) or []:
+                      if isinstance(a,dict) and a.get('name'):ability_by_name[a['name']]=a
+          for n,a in r7.get('abilityDefinitions',{}).items():
+              if isinstance(a,dict): ability_by_name[n]=a
+          def ability(n):return json.loads(json.dumps(ability_by_name.get(n) or {'name':n}))
+          def find(ref):return bykey.get(ref) or byconst.get(ref) or byname.get(ref)
+          openkeys={p.get('key') for p in current if p.get('integrationState')=='APPROVED_DESIGN_RECORD'}
+          items={x['key']:x for x in r7.get('patches',[])+r7.get('additions',[]) if x.get('key') in openkeys}
+          out=[]
+          for key in sorted(openkeys):
+              item=items[key];cur=bykey[key];p=json.loads(json.dumps(cur));base=find(item.get('inheritFrom')) if item.get('inheritFrom') else None
+              if base:
+                  forced=set(item.get('forceInherit') or [])
+                  for f in ('stats','bst','description','levelUpMoves','sourceAbilities'):
+                      val=p.get(f); blank=val is None or val==[] or val=={} or val=='' or (f=='stats' and not any(v is not None for v in (val or {}).values()))
+                      if f in forced or blank:p[f]=json.loads(json.dumps(base.get(f)))
+                  if not p.get('spriteAtlas') and base.get('spriteAtlas'):p['baseSpriteFallback']=json.loads(json.dumps(base.get('spriteAtlas')))
+              s=json.loads(json.dumps(item.get('set') or {}));prim=s.pop('primaryAbilityNames',None);inn=s.pop('innateNames',None);p.update(s)
+              if prim is not None:p['primaryAbilities']=[ability(x) for x in prim]
+              if inn is not None:p['innates']=[ability(x) for x in inn]
+              if item.get('extraMoves'):
+                  moves=json.loads(json.dumps(p.get('levelUpMoves') or []));seen={(m.get('level'),m.get('move')) for m in moves}
+                  for m in item['extraMoves']:
+                      sig=(m.get('level'),m.get('move'))
+                      if sig not in seen:moves.append(json.loads(json.dumps(m)));seen.add(sig)
+                  def lv(m):
+                      try:return int(m.get('level'))
+                      except:return 999
+                  moves.sort(key=lambda m:(lv(m),str(m.get('move'))));p['levelUpMoves']=moves
+              p['recoverySource']='R7 review overlay + current source-linked base species'
+              out.append(p)
+          def statok(p):
+              s=p.get('stats') or {};return all(s.get(k) is not None for k in ('hp','atk','def','spa','spd','spe'))
+          summary={'count':len(out),'types':sum(bool(p.get('types')) for p in out),'stats':sum(statok(p) for p in out),'primary':sum(bool(p.get('primaryAbilities')) for p in out),'innates':sum(bool(p.get('innates')) for p in out),'moves':sum(bool(p.get('levelUpMoves')) for p in out),'exactSprite':sum(bool(p.get('spriteAtlas')) for p in out),'baseSpriteFallback':sum(bool(p.get('baseSpriteFallback')) for p in out)}
+          Path('materialized_open_118_v2.json').write_text(json.dumps(out,indent=2,ensure_ascii=False))
+          print(json.dumps(summary,indent=2))
+          print('STAT GAPS')
+          for p in out:
+              if not statok(p):print(p.get('key'),p.get('displayName') or p.get('name'),p.get('stats'),item.get('inheritFrom'))
+          assert len(out)==118
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mercury-materialized-open-118-v2
+          path: materialized_open_118_v2.json
