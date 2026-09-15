@@ -1,0 +1,34 @@
+name: Apply R8 118-record completion
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/apply-r8-118-completion.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build and validate R8 completion overlay
+        run: python tools/build_r8_118_completion.py
+      - name: Commit generated R8 completion data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pokedex/completion_overlay_r8.json.gz.b64 \
+                  data/pokedex/index.json \
+                  data/pokedex/reports/open_118_completion_r8.tsv \
+                  R8_118_COMPLETION_CHECKPOINT.md
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Complete gameplay data for 118 open Mercury records"
+            git push origin HEAD:main
+          fi
