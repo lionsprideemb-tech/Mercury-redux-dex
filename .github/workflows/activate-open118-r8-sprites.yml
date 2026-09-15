@@ -1,0 +1,107 @@
+name: Activate open118 R8 sprites
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/activate-open118-r8-sprites.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: activate-open118-r8-sprites
+  cancel-in-progress: false
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Assemble and validate atlas
+        shell: python
+        run: |
+          import base64, gzip, hashlib, json
+          from pathlib import Path
+
+          root = Path('.')
+          parts_dir = root / 'assets/atlas_strips/.open118_r8_parts'
+          parts = [parts_dir / f'part{i:02d}' for i in range(8)]
+          assert all(p.exists() for p in parts), [str(p) for p in parts if not p.exists()]
+          sizes = [p.stat().st_size for p in parts]
+          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
+
+          encoded = ''.join(p.read_text().strip() for p in parts)
+          assert len(encoded) == 115972, len(encoded)
+          raw = base64.b64decode(encoded, validate=True)
+          assert len(raw) == 86978, len(raw)
+          sha = hashlib.sha256(raw).hexdigest()
+          expected = 'c52e4bffb9e6696758f6c253e83816593d7052bcbee6f6001046b16b4b03c291'
+          assert sha == expected, (sha, expected)
+
+          atlas = root / 'assets/atlas_strips/open118_r8.webp'
+          atlas.write_bytes(raw)
+
+          ov_path = root / 'data/pokedex/sprite_completion_r8.json.gz.b64'
+          ov_raw = base64.b64decode(ov_path.read_text().strip())
+          if ov_raw[:2] == b'\x1f\x8b':
+              ov_raw = gzip.decompress(ov_raw)
+          ov = json.loads(ov_raw)
+          patches = ov.get('patches', [])
+          assert len(patches) == 118, len(patches)
+          exact = [p for p in patches if (p.get('set') or {}).get('spriteAtlas')]
+          pending = [p for p in patches if not (p.get('set') or {}).get('spriteAtlas')]
+          assert len(exact) == 112, len(exact)
+          assert len(pending) == 6, len(pending)
+          for p in exact:
+              sa = p['set']['spriteAtlas']
+              assert sa.get('sheet') == 'assets/atlas_strips/open118_r8.webp', (p.get('key'), sa)
+              assert sa.get('w') == 64 and sa.get('h') == 64, (p.get('key'), sa)
+          expected_pending = {'PS0001','PS0002','R0628','R0631','R0633','R0652'}
+          assert {p.get('key') for p in pending} == expected_pending
+
+          idx_path = root / 'data/pokedex/index.json'
+          idx = json.loads(idx_path.read_text())
+          overlays = idx.get('overlays', [])
+          # completion_overlay_r8 is the single mechanics authority for these 118.
+          overlays = [x for x in overlays if x != 'design_completion_118.json.gz.b64']
+          if 'completion_overlay_r8.json.gz.b64' not in overlays:
+              overlays.append('completion_overlay_r8.json.gz.b64')
+          overlays = [x for x in overlays if x != 'sprite_completion_r8.json.gz.b64']
+          overlays.append('sprite_completion_r8.json.gz.b64')
+          idx['overlays'] = overlays
+
+          meta = idx.setdefault('meta', {})
+          meta['version'] = 'Source-linked R8 — 118 design complete / 112 sprites bound'
+          meta['spriteIdentityResolvedForOpenRecords'] = 118
+          meta['spriteAtlasBoundForOpenRecords'] = 112
+          meta['spriteAtlasPendingForOpenRecords'] = 6
+          meta['historicalSpriteMasterRecoveryPending'] = 6
+          meta['open118SpriteAtlas'] = 'assets/atlas_strips/open118_r8.webp'
+          meta['open118SpriteAtlasSha256'] = expected
+          # R8 historical audit established zero of these 118 previously had atlas bindings.
+          if isinstance(meta.get('spriteCount'), int):
+              meta['spriteCount'] = 1429
+          idx_path.write_text(json.dumps(idx, separators=(',',':'), ensure_ascii=False))
+
+          report = root / 'R8_118_SPRITE_ACTIVATION_CHECKPOINT.md'
+          report.write_text(f'''# Pokémon Mercury Redux — R8 open-118 sprite activation\n\nDate: 2026-09-15\n\n- Mechanics authority: `completion_overlay_r8.json.gz.b64`\n- Exact/current-source sprite bindings activated: **112 / 118**\n- Locked historical master recovery pending: **6 / 118**\n- Atlas: `assets/atlas_strips/open118_r8.webp`\n- Atlas bytes: **{len(raw)}**\n- Atlas SHA-256: `{sha}`\n- Sprite overlay: `data/pokedex/sprite_completion_r8.json.gz.b64`\n- The duplicate `design_completion_118.json.gz.b64` was removed from the active overlay order, but retained in-repo as a recovery/audit artifact.\n- No base-species art was substituted for the six missing locked masters.\n''')
+          print('atlas sha', sha)
+          print('exact bindings', len(exact), 'pending masters', len(pending))
+          print('active overlays', idx['overlays'])
+
+      - name: Commit activated atlas and load order
+        shell: bash
+        run: |
+          git config user.name 'Mercury Redux NextDex Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add assets/atlas_strips/open118_r8.webp data/pokedex/index.json R8_118_SPRITE_ACTIVATION_CHECKPOINT.md
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'Activate 112 open118 R8 sprite bindings'
+            git push
+          fi
