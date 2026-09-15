@@ -1,0 +1,139 @@
+name: Audit open Mercury design records
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audit-open-design-records.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build 118-record audit
+        shell: python
+        run: |
+          import base64, gzip, json, csv
+          from pathlib import Path
+
+          root = Path('.')
+          idx = json.loads((root/'data/pokedex/index.json').read_text())
+
+          def load_b64_gzip(path):
+              raw = base64.b64decode(Path(path).read_text().strip())
+              if raw[:2] == b'\x1f\x8b':
+                  raw = gzip.decompress(raw)
+              return json.loads(raw)
+
+          pokemon = []
+          for name in idx.get('shards', []):
+              pokemon.extend(load_b64_gzip(root/'data/pokedex'/name).get('pokemon', []))
+
+          def apply_overlay(rows, overlay):
+              data = [dict(p) for p in rows]
+              by_key = {p.get('key'): p for p in data if p.get('key')}
+              for item in overlay.get('patches', []):
+                  p = by_key.get(item.get('key'))
+                  if p is not None:
+                      p.update(item.get('set') or {})
+              for item in overlay.get('additions', []):
+                  key = item.get('key')
+                  if not key or key in by_key:
+                      continue
+                  p = dict(item)
+                  p.update(item.get('set') or {})
+                  p.pop('set', None)
+                  data.append(p)
+                  by_key[key] = p
+              removed = set(overlay.get('removeKeys', []))
+              return [p for p in data if p.get('key') not in removed]
+
+          overlays = idx.get('overlays') or ([idx['overlay']] if idx.get('overlay') else [])
+          for name in overlays:
+              pokemon = apply_overlay(pokemon, load_b64_gzip(root/'data/pokedex'/name))
+
+          open_rows = [p for p in pokemon if p.get('integrationState') == 'APPROVED_DESIGN_RECORD']
+
+          def ability_names(items):
+              out=[]
+              for a in items or []:
+                  if isinstance(a, dict): out.append(a.get('name') or a.get('constant') or '')
+                  else: out.append(str(a))
+              return [x for x in out if x]
+
+          def stats_ok(p):
+              s=p.get('stats') or {}
+              return all(s.get(k) is not None for k in ('hp','atk','def','spa','spd','spe'))
+
+          def missing(p):
+              m=[]
+              if not (p.get('types') or []): m.append('types')
+              if not stats_ok(p): m.append('stats')
+              if not ability_names(p.get('primaryAbilities')): m.append('primaryAbilities')
+              if not ability_names(p.get('innates')): m.append('innates')
+              if not (p.get('levelUpMoves') or []): m.append('levelUpMoves')
+              if not p.get('spriteAtlas'): m.append('sprite')
+              if not (p.get('constant') or p.get('publicConstant') or p.get('sourceConstant')): m.append('constant')
+              return m
+
+          audit=[]
+          for p in open_rows:
+              audit.append({
+                  'key': p.get('key'),
+                  'name': p.get('displayName') or p.get('name'),
+                  'basePokemon': p.get('basePokemon'),
+                  'types': '/'.join(p.get('types') or []),
+                  'stats': p.get('stats'),
+                  'bst': p.get('bst'),
+                  'primaryAbilities': ability_names(p.get('primaryAbilities')),
+                  'innates': ability_names(p.get('innates')),
+                  'levelUpMoveCount': len(p.get('levelUpMoves') or []),
+                  'hasSprite': bool(p.get('spriteAtlas')),
+                  'spriteAtlas': p.get('spriteAtlas'),
+                  'constant': p.get('constant') or p.get('publicConstant') or p.get('sourceConstant'),
+                  'designStatus': p.get('designStatus'),
+                  'mechanicsStatus': p.get('mechanicsStatus'),
+                  'source': p.get('source'),
+                  'classification': p.get('classification'),
+                  'missing': missing(p),
+              })
+
+          summary={
+              'expectedOpenDesignRecords': idx.get('meta',{}).get('approvedDesignRecords'),
+              'actualOpenDesignRecords': len(open_rows),
+              'completeTypes': sum(bool(p.get('types')) for p in open_rows),
+              'completeStats': sum(stats_ok(p) for p in open_rows),
+              'withPrimaryAbilities': sum(bool(ability_names(p.get('primaryAbilities'))) for p in open_rows),
+              'withInnates': sum(bool(ability_names(p.get('innates'))) for p in open_rows),
+              'withLevelUpMoves': sum(bool(p.get('levelUpMoves')) for p in open_rows),
+              'withSprites': sum(bool(p.get('spriteAtlas')) for p in open_rows),
+              'withoutSprites': sum(not bool(p.get('spriteAtlas')) for p in open_rows),
+              'fullyCompleteIncludingSprite': sum(not missing(p) for p in open_rows),
+          }
+
+          Path('open_118_audit.json').write_text(json.dumps({'summary':summary,'records':audit}, indent=2, ensure_ascii=False))
+          with Path('open_118_audit.tsv').open('w', newline='') as f:
+              w=csv.writer(f, delimiter='\t')
+              w.writerow(['key','name','types','stats','bst','primaryAbilities','innates','moves','sprite','constant','missing'])
+              for r in audit:
+                  s=r['stats'] or {}
+                  stat_text='/'.join(str(s.get(k,'')) for k in ('hp','atk','def','spa','spd','spe'))
+                  w.writerow([r['key'],r['name'],r['types'],stat_text,r['bst'],', '.join(r['primaryAbilities']),', '.join(r['innates']),r['levelUpMoveCount'],'YES' if r['hasSprite'] else 'NO',r['constant'],', '.join(r['missing'])])
+
+          print(json.dumps(summary, indent=2))
+          print('\nRecords with missing fields:')
+          for r in audit:
+              if r['missing']:
+                  print(f"{r['key']} | {r['name']} | {', '.join(r['missing'])}")
+
+          assert len(open_rows) == 118, f'Expected 118 approved design records, found {len(open_rows)}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mercury-open-118-audit
+          path: |
+            open_118_audit.json
+            open_118_audit.tsv
