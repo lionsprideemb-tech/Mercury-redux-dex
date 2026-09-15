@@ -1,0 +1,32 @@
+name: Export R7 design layer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/export-r7-design-layer.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode R7 review overlay
+        shell: python
+        run: |
+          import base64, gzip, json
+          from pathlib import Path
+          src=Path('data/pokedex/review_overlay_r7.json.gz.b64')
+          raw=base64.b64decode(src.read_text().strip())
+          if raw[:2] == b'\x1f\x8b': raw=gzip.decompress(raw)
+          obj=json.loads(raw)
+          Path('review_overlay_r7_decoded.json').write_text(json.dumps(obj,indent=2,ensure_ascii=False))
+          print('patches',len(obj.get('patches',[])),'additions',len(obj.get('additions',[])),'removeKeys',len(obj.get('removeKeys',[])))
+          print('abilityDefinitions',len(obj.get('abilityDefinitions',{})))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mercury-r7-design-layer
+          path: review_overlay_r7_decoded.json
