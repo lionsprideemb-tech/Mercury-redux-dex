@@ -33,27 +33,29 @@ jobs:
               p = d / name
               assert p.exists(), str(p)
               return p.read_text().strip()
-
-          logical = [text(f'part{i:02d}') for i in range(5)]
-          logical.append(text('part05_correct'))
-
-          p6_names = ['part06a','part06b','part06c','part06d','part06e']
-          p6_sizes = [3000,3000,3000,3000,2500]
-          p6_hashes = [
-              '34e0b60de1e58ddfc48eda5f57799156a5fd2f0919552708c4470ea474a28e5f',
-              'a4d00e724f6a6f9d299bea17fbf130984115c128bff24d19eeeacf35d3ea8037',
-              '991145524e035876a154f3ab4bd9bd95a406cf93a7185535ec12a520aaa035b4',
-              '4e4da8cc7f49e77c5ca9fc303d1433c47b5404f159ea592b638af4a98a1e70b1',
-              '2238b6e1df479ddeb38c1d3e2b2a4454e1484e2831b86d2c8a9d89255f184961',
-          ]
-          p6=[]
-          for name,size,want in zip(p6_names,p6_sizes,p6_hashes):
+          def check(name,size,want):
               s=text(name)
               assert len(s)==size,(name,len(s),size)
               got=hashlib.sha256(s.encode()).hexdigest()
               assert got==want,(name,got,want)
-              p6.append(s)
-          logical.append(''.join(p6))
+              return s
+
+          logical = [text(f'part{i:02d}') for i in range(5)]
+          logical.append(text('part05_correct'))
+
+          p6a=check('part06a',3000,'34e0b60de1e58ddfc48eda5f57799156a5fd2f0919552708c4470ea474a28e5f')
+          p6b=check('part06b',3000,'a4d00e724f6a6f9d299bea17fbf130984115c128bff24d19eeeacf35d3ea8037')
+          cparts=[
+              check('part06c0',750,'768fc584bfc6022789a21c291474ec70b2f9defe7c09d568310c80a315020e43'),
+              check('part06c1',750,'b0a25ae45cd621b51e98b6e5eba59444afc1b3a600178686bfc587bb10fd1fed'),
+              check('part06c2',750,'b5a89db9edd2a5f56baf40da68d485b224b0917f9eb9db52246668dcf2cd9b51'),
+              check('part06c3',750,'a774bfdd249018cba76040d162ebde8a5b729fdbf9597891aba30857a475de57'),
+          ]
+          p6c=''.join(cparts)
+          assert hashlib.sha256(p6c.encode()).hexdigest()=='991145524e035876a154f3ab4bd9bd95a406cf93a7185535ec12a520aaa035b4'
+          p6d=check('part06d',3000,'4e4da8cc7f49e77c5ca9fc303d1433c47b5404f159ea592b638af4a98a1e70b1')
+          p6e=check('part06e',2500,'2238b6e1df479ddeb38c1d3e2b2a4454e1484e2831b86d2c8a9d89255f184961')
+          logical.append(p6a+p6b+p6c+p6d+p6e)
           logical.append(text('part07'))
 
           sizes = [len(x) for x in logical]
