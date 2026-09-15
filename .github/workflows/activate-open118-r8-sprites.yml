@@ -28,16 +28,24 @@ jobs:
           from pathlib import Path
 
           root = Path('.')
-          parts_dir = root / 'assets/atlas_strips/.open118_r8_parts'
-          parts = [parts_dir / f'part{i:02d}' for i in range(5)] + [
-              parts_dir / 'part05_correct',
-              parts_dir / 'part06_correct',
-              parts_dir / 'part07',
-          ]
-          assert all(p.exists() for p in parts), [str(p) for p in parts if not p.exists()]
-          sizes = [p.stat().st_size for p in parts]
-          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
+          d = root / 'assets/atlas_strips/.open118_r8_parts'
+          def text(name):
+              p = d / name
+              assert p.exists(), str(p)
+              return p.read_text().strip()
 
+          logical = [text(f'part{i:02d}') for i in range(5)]
+          logical.append(text('part05_correct'))
+          logical.append(''.join([
+              text('part06_0'),
+              text('part06_1'),
+              text('part06_2_0'), text('part06_2_1'), text('part06_2_2'), text('part06_2_3'),
+              text('part06_3'),
+          ]))
+          logical.append(text('part07'))
+
+          sizes = [len(x) for x in logical]
+          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
           expected_chunk_hashes = [
               'df6e2bf183a0b577e4580d114596a9737f155d4d7b9d5ba81bcfeaa6b4f7c262',
               'a9c00ee598ae050f657294b7ce16bea03fa0fd4960268c21ef11616bccfb1cad',
@@ -48,25 +56,22 @@ jobs:
               'ecabce485d46f7c228c0c18c05d784a2f14754f14a4592be3dfa2661ff74438c',
               'a46d24a448df18296d8c69c7c5a8f12c72caaa428889364da7e31906d303e3e5',
           ]
-          for p,want in zip(parts,expected_chunk_hashes):
-              got=hashlib.sha256(p.read_bytes()).hexdigest()
-              assert got == want, (p.name,got,want)
+          for i,(chunk,want) in enumerate(zip(logical,expected_chunk_hashes)):
+              got=hashlib.sha256(chunk.encode()).hexdigest()
+              assert got == want, (i,got,want)
 
-          encoded = ''.join(p.read_text().strip() for p in parts)
+          encoded = ''.join(logical)
           assert len(encoded) == 115972, len(encoded)
           raw = base64.b64decode(encoded, validate=True)
           assert len(raw) == 86978, len(raw)
           sha = hashlib.sha256(raw).hexdigest()
           expected = 'c52e4bffb9e6696758f6c253e83816593d7052bcbee6f6001046b16b4b03c291'
           assert sha == expected, (sha, expected)
-
-          atlas = root / 'assets/atlas_strips/open118_r8.webp'
-          atlas.write_bytes(raw)
+          (root / 'assets/atlas_strips/open118_r8.webp').write_bytes(raw)
 
           ov_path = root / 'data/pokedex/sprite_completion_r8.json.gz.b64'
           ov_raw = base64.b64decode(ov_path.read_text().strip())
-          if ov_raw[:2] == b'\x1f\x8b':
-              ov_raw = gzip.decompress(ov_raw)
+          if ov_raw[:2] == b'\x1f\x8b': ov_raw = gzip.decompress(ov_raw)
           ov = json.loads(ov_raw)
           patches = ov.get('patches', [])
           assert len(patches) == 118, len(patches)
@@ -83,10 +88,8 @@ jobs:
 
           idx_path = root / 'data/pokedex/index.json'
           idx = json.loads(idx_path.read_text())
-          overlays = idx.get('overlays', [])
-          overlays = [x for x in overlays if x != 'design_completion_118.json.gz.b64']
-          if 'completion_overlay_r8.json.gz.b64' not in overlays:
-              overlays.append('completion_overlay_r8.json.gz.b64')
+          overlays = [x for x in idx.get('overlays', []) if x != 'design_completion_118.json.gz.b64']
+          if 'completion_overlay_r8.json.gz.b64' not in overlays: overlays.append('completion_overlay_r8.json.gz.b64')
           overlays = [x for x in overlays if x != 'sprite_completion_r8.json.gz.b64']
           overlays.append('sprite_completion_r8.json.gz.b64')
           idx['overlays'] = overlays
@@ -99,12 +102,10 @@ jobs:
           meta['historicalSpriteMasterRecoveryPending'] = 6
           meta['open118SpriteAtlas'] = 'assets/atlas_strips/open118_r8.webp'
           meta['open118SpriteAtlasSha256'] = expected
-          if isinstance(meta.get('spriteCount'), int):
-              meta['spriteCount'] = 1429
+          if isinstance(meta.get('spriteCount'), int): meta['spriteCount'] = 1429
           idx_path.write_text(json.dumps(idx, separators=(',',':'), ensure_ascii=False))
 
-          report = root / 'R8_118_SPRITE_ACTIVATION_CHECKPOINT.md'
-          report.write_text(f'''# Pokémon Mercury Redux — R8 open-118 sprite activation\n\nDate: 2026-09-15\n\n- Mechanics authority: `completion_overlay_r8.json.gz.b64`\n- Exact/current-source sprite bindings activated: **112 / 118**\n- Locked historical master recovery pending: **6 / 118**\n- Atlas: `assets/atlas_strips/open118_r8.webp`\n- Atlas bytes: **{len(raw)}**\n- Atlas SHA-256: `{sha}`\n- Sprite overlay: `data/pokedex/sprite_completion_r8.json.gz.b64`\n- The duplicate `design_completion_118.json.gz.b64` was removed from the active overlay order, but retained in-repo as a recovery/audit artifact.\n- No base-species art was substituted for the six missing locked masters.\n''')
+          (root / 'R8_118_SPRITE_ACTIVATION_CHECKPOINT.md').write_text(f'''# Pokémon Mercury Redux — R8 open-118 sprite activation\n\nDate: 2026-09-15\n\n- Mechanics authority: `completion_overlay_r8.json.gz.b64`\n- Exact/current-source sprite bindings activated: **112 / 118**\n- Locked historical master recovery pending: **6 / 118**\n- Atlas: `assets/atlas_strips/open118_r8.webp`\n- Atlas bytes: **{len(raw)}**\n- Atlas SHA-256: `{sha}`\n- Sprite overlay: `data/pokedex/sprite_completion_r8.json.gz.b64`\n- The duplicate `design_completion_118.json.gz.b64` was removed from the active overlay order, but retained in-repo as a recovery/audit artifact.\n- No base-species art was substituted for the six missing locked masters.\n''')
           print('atlas sha', sha)
           print('exact bindings', len(exact), 'pending masters', len(pending))
           print('active overlays', idx['overlays'])
