@@ -1,0 +1,70 @@
+name: Export current merged dex
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/export-current-merged-dex.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge shards and overlays
+        shell: python
+        run: |
+          import base64, gzip, json
+          from pathlib import Path
+
+          root=Path('.')
+          idx=json.loads((root/'data/pokedex/index.json').read_text())
+
+          def load(path):
+              raw=base64.b64decode(Path(path).read_text().strip())
+              if raw[:2]==b'\x1f\x8b': raw=gzip.decompress(raw)
+              return json.loads(raw)
+
+          rows=[]
+          for shard in idx.get('shards',[]):
+              rows.extend(load(root/'data/pokedex'/shard).get('pokemon',[]))
+
+          def apply(rows,ov):
+              data=[dict(x) for x in rows]
+              by={x.get('key'):x for x in data if x.get('key')}
+              for p in ov.get('patches',[]):
+                  cur=by.get(p.get('key'))
+                  if cur is not None: cur.update(p.get('set') or {})
+              for a in ov.get('additions',[]):
+                  key=a.get('key')
+                  if key and key not in by:
+                      cur=dict(a); cur.update(cur.pop('set',{}) or {})
+                      data.append(cur); by[key]=cur
+              removed=set(ov.get('removeKeys',[]))
+              return [x for x in data if x.get('key') not in removed]
+
+          overlays=idx.get('overlays') or ([idx['overlay']] if idx.get('overlay') else [])
+          for ov in overlays: rows=apply(rows,load(root/'data/pokedex'/ov))
+
+          open_rows=[x for x in rows if x.get('integrationState')=='APPROVED_DESIGN_RECORD']
+          samples=[]
+          for x in rows:
+              if x.get('spriteAtlas'):
+                  samples.append({k:x.get(k) for k in ('key','displayName','name','constant','sourceConstant','spriteAtlas','spriteKey','frontSprite','icon')})
+                  if len(samples)>=12: break
+
+          Path('current_merged_dex.json').write_text(json.dumps({'meta':idx.get('meta',{}),'pokemon':rows},indent=2,ensure_ascii=False))
+          Path('open_118_current.json').write_text(json.dumps(open_rows,indent=2,ensure_ascii=False))
+          Path('sprite_samples.json').write_text(json.dumps(samples,indent=2,ensure_ascii=False))
+          print('total',len(rows),'open',len(open_rows),'sprite samples',len(samples))
+          print(json.dumps(samples[:3],indent=2,ensure_ascii=False))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mercury-current-merged-dex
+          path: |
+            current_merged_dex.json
+            open_118_current.json
+            sprite_samples.json
