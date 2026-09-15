@@ -32,9 +32,58 @@ async function loadPokedexPayload(){
   if(!idxRes.ok) throw new Error(`HTTP ${idxRes.status} loading Pokédex index`);
   const idx=await idxRes.json();
   const parts=await Promise.all((idx.shards||[]).map(name=>gunzipJson(`data/pokedex/${name}`)));
-  const pokemon=parts.flatMap(x=>x.pokemon||[]);
+  let pokemon=parts.flatMap(x=>x.pokemon||[]);
+  if(idx.overlay){
+    const overlay=await gunzipJson(`data/pokedex/${idx.overlay}`);
+    pokemon=applyReviewOverlay(pokemon,overlay);
+  }
   await hydrateSpriteAtlases(pokemon);
   return {meta:idx.meta||{},pokemon};
+}
+
+function applyReviewOverlay(pokemon,overlay){
+  const data=pokemon.map(p=>({...p}));
+  const byKey=new Map(data.map(p=>[p.key,p]));
+  const byConst=new Map(data.filter(p=>p.constant).map(p=>[p.constant,p]));
+  const abilityMap=new Map();
+  data.forEach(p=>['primaryAbilities','innates','sourceAbilities'].forEach(g=>(p[g]||[]).forEach(a=>abilityMap.set(a.name,a))));
+  Object.values(overlay.abilityDefinitions||{}).forEach(a=>abilityMap.set(a.name,a));
+  const clone=x=>x==null?x:JSON.parse(JSON.stringify(x));
+  const blank=x=>x==null||(Array.isArray(x)&&!x.length)||(typeof x==='object'&&!Array.isArray(x)&&!Object.values(x).some(v=>v!=null));
+  const abilityFor=name=>clone(abilityMap.get(name)||{constant:`ABILITY_${String(name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')}`,name,description:'R7 review description pending.'});
+  const resolveBase=ref=>byKey.get(ref)||byConst.get(ref)||data.find(p=>p.displayName===ref||p.name===ref);
+  const applyItem=item=>{
+    let p=byKey.get(item.key);
+    if(!p){p={key:item.key};data.push(p);byKey.set(item.key,p);}
+    const base=item.inheritFrom?resolveBase(item.inheritFrom):null;
+    if(base){
+      const forced=new Set(item.forceInherit||[]);
+      ['stats','bst','description','levelUpMoves','sourceAbilities'].forEach(f=>{if(forced.has(f)||blank(p[f]))p[f]=clone(base[f]);});
+    }
+    const set=clone(item.set||{}), primaryNames=set.primaryAbilityNames, innateNames=set.innateNames;
+    delete set.primaryAbilityNames;delete set.innateNames;
+    Object.assign(p,set);
+    if(primaryNames)p.primaryAbilities=primaryNames.map(abilityFor);
+    if(innateNames)p.innates=innateNames.map(abilityFor);
+    if(item.extraMoves?.length){
+      const moves=clone(p.levelUpMoves||[]), seen=new Set(moves.map(m=>`${m.level}|${m.move}`));
+      item.extraMoves.forEach(m=>{const k=`${m.level}|${m.move}`;if(!seen.has(k)){moves.push(clone(m));seen.add(k);}});
+      const level=m=>{const n=parseInt(m.level,10);return Number.isFinite(n)?n:999;};
+      moves.sort((a,b)=>level(a)-level(b)||String(a.move).localeCompare(String(b.move)));p.levelUpMoves=moves;
+    }
+    if(p.constant)byConst.set(p.constant,p);
+  };
+  (overlay.patches||[]).forEach(applyItem);
+  (overlay.additions||[]).forEach(applyItem);
+  const removed=new Set(overlay.removeKeys||[]);
+  const out=data.filter(p=>!removed.has(p.key));
+  out.forEach(p=>{
+    p.planned=false;
+    const abilityText=[...(p.primaryAbilities||[]),...(p.innates||[])].map(a=>`${a.name} ${a.description||''}`).join(' ');
+    const moveText=(p.levelUpMoves||[]).map(m=>m.move).join(' ');
+    p.searchText=[p.displayName,p.name,p.basePokemon,p.classification,p.source,p.bindingStatus,p.designStatus,(p.types||[]).join(' '),abilityText,moveText].filter(Boolean).join(' ').toLowerCase();
+  });
+  return out;
 }
 
 async function hydrateSpriteAtlases(pokemon){
@@ -51,15 +100,17 @@ async function hydrateSpriteAtlases(pokemon){
   });
 }
 
-const isCurrent=p=>!p.planned;
+const isReviewDraft=p=>Boolean(p.reviewDraft);
+const isApproved=p=>!isReviewDraft(p);
 
 async function boot(){
   try{
     const payload=await loadPokedexPayload(); state.data=payload.pokemon; state.meta=payload.meta||{};
     hydrateFilters(); bindEvents(); updateCounts(); applyFilters(); openFromHash();
-    $('#headerMeta').textContent=`${state.meta.rosterCount?.toLocaleString()||state.data.length.toLocaleString()} entries · ${state.meta.sourceAuthority||'R6 authority'}`;
-    $('#sourceBoundCount').textContent=(state.meta.sourceBoundCount||state.data.filter(isCurrent).length).toLocaleString();
-    $('#spriteCount').textContent=(state.meta.spriteCount||state.data.filter(hasSprite).length).toLocaleString();
+    $('#headerMeta').textContent=`${state.data.length.toLocaleString()} entries · ${state.meta.version||'R7 review pass'}`;
+    $('#approvedCount').textContent=state.data.filter(isApproved).length.toLocaleString();
+    $('#reviewDraftCount').textContent=state.data.filter(isReviewDraft).length.toLocaleString();
+    $('#spriteCount').textContent=state.data.filter(hasSprite).length.toLocaleString();
   }catch(err){
     $('#dexGrid').innerHTML=`<div class="empty-state"><h2>Could not load Pokédex data</h2><p>${escapeHtml(err.message)}. GitHub Pages or a local web server is required.</p></div>`;
   }
@@ -96,14 +147,14 @@ function resetFilters(){
 }
 function updateCounts(){
   $('#tabAllCount').textContent=state.data.length.toLocaleString();
-  $('#tabCurrentCount').textContent=state.data.filter(isCurrent).length.toLocaleString();
-  $('#tabPlannedCount').textContent=state.data.filter(p=>p.planned).length.toLocaleString();
+  $('#tabCurrentCount').textContent=state.data.filter(isApproved).length.toLocaleString();
+  $('#tabPlannedCount').textContent=state.data.filter(isReviewDraft).length.toLocaleString();
   $('#tabFavoriteCount').textContent=state.favorites.size?state.favorites.size.toLocaleString():'';
 }
 function applyFilters(){
   let a=state.data.filter(p=>{
-    if(state.status==='current'&&!isCurrent(p))return false;
-    if(state.status==='planned'&&!p.planned)return false;
+    if(state.status==='current'&&!isApproved(p))return false;
+    if(state.status==='planned'&&!isReviewDraft(p))return false;
     if(state.status==='favorites'&&!state.favorites.has(p.key))return false;
     if(state.query&&!p.searchText?.includes(state.query))return false;
     if(state.type&&!(p.types||[]).includes(state.type))return false;
@@ -126,11 +177,11 @@ function renderCards(){
   const grid=$('#dexGrid'), tmpl=$('#cardTemplate'); grid.innerHTML='';
   const visible=state.filtered.slice(0,state.shown), frag=document.createDocumentFragment();
   visible.forEach(p=>{
-    const node=tmpl.content.firstElementChild.cloneNode(true); node.dataset.key=p.key; node.classList.toggle('pending',!!p.planned);
+    const node=tmpl.content.firstElementChild.cloneNode(true); node.dataset.key=p.key; node.classList.toggle('pending',isReviewDraft(p));
     $('.card-id',node).textContent=displayId(p);
     $('.card-name',node).textContent=p.displayName||p.name;
     $('.type-row',node).innerHTML=(p.types||[]).map(typeBadge).join('')||'<span class="source-pill">Type pending</span>';
-    $('.card-status',node).textContent=p.planned?'Pending integration':'Current source';
+    $('.card-status',node).textContent=isReviewDraft(p)?'Review draft':'Approved roster';
     $('.card-bst',node).textContent=p.bst?`BST ${p.bst}`:'BST —';
     const well=$('.sprite-well',node), ph=$('.sprite-placeholder',node);
     if(p.spriteAtlas){well.insertAdjacentHTML('afterbegin',spriteMarkup(p,'card-sprite'));ph.style.display='none';}else{ph.style.display='grid';}
@@ -148,26 +199,26 @@ function abilityCards(p){
   const cards=[];
   (p.primaryAbilities||[]).forEach((a,i)=>cards.push(`<div class="ability-card ${p.primaryLocked?'locked':''}"><div class="slot">Primary ${i+1}${p.primaryLocked?' · locked':''}</div><h4>${escapeHtml(a.name)}</h4><p>${escapeHtml(a.description||'Description pending.')}</p></div>`));
   (p.innates||[]).forEach((a,i)=>cards.push(`<div class="ability-card"><div class="slot">Innate ${i+1}</div><h4>${escapeHtml(a.name)}</h4><p>${escapeHtml(a.description||'Description pending.')}</p></div>`));
-  return cards.length?cards.join(''):'<p class="detail-description">Ability package is pending source integration for this approved entry.</p>';
+  return cards.length?cards.join(''):'<p class="detail-description">No special ability package is listed for this entry.</p>';
 }
 function statMarkup(p){
   const rows=statKeys.map(([k,n])=>{const v=p.stats?.[k];const pct=v==null?0:Math.min(100,(v/180)*100);return `<div class="stat-row"><span class="stat-name">${n}</span><span class="stat-value">${v??'—'}</span><div class="stat-track"><div class="stat-fill" style="width:${pct}%"></div></div></div>`}).join('');
-  return `<div class="stat-grid">${rows}</div><div class="bst-line"><span>Base Stat Total</span><strong>${p.bst??'Pending'}</strong></div>`;
+  return `<div class="stat-grid">${rows}</div><div class="bst-line"><span>Base Stat Total</span><strong>${p.bst??'—'}</strong></div>`;
 }
 function movesMarkup(p){
- const moves=p.levelUpMoves||[]; if(!moves.length)return '<p class="detail-description">Level-up learnset is not source-bound for this approved entry yet.</p>';
+ const moves=p.levelUpMoves||[]; if(!moves.length)return '<p class="detail-description">No level-up learnset is listed for this entry.</p>';
  return `<table class="move-table"><thead><tr><th>Level</th><th>Move</th></tr></thead><tbody>${moves.map(m=>`<tr><td>${escapeHtml(m.level)}</td><td>${escapeHtml(m.move)}</td></tr>`).join('')}</tbody></table>`;
 }
 function evoMarkup(p){
- const e=p.evolutions||[]; if(!e.length)return '<p class="detail-description">No further evolution is listed in the current source entry.</p>';
- return `<div class="evo-list">${e.map(x=>`<div class="evo-item"><strong>${escapeHtml(x.target?.replace(/^SPECIES_/,'').replaceAll('_',' ')||'Unknown')}</strong><span class="evo-method">${escapeHtml(x.method||'')} ${escapeHtml(x.param||'')}</span></div>`).join('')}</div>`;
+ const e=p.evolutions||[]; if(!e.length)return '<p class="detail-description">No further evolution is listed for this entry.</p>';
+ return `<div class="evo-list">${e.map(x=>`<div class="evo-item"><strong>${escapeHtml(x.targetName||x.target?.replace(/^SPECIES_/,'').replaceAll('_',' ')||'Unknown')}</strong><span class="evo-method">${escapeHtml(x.method||'')} ${escapeHtml(x.param||'')}</span></div>`).join('')}</div>`;
 }
 function openDetail(p){
   const c=$('#detailContent');
   const sourceAb=(p.sourceAbilities||[]).map(a=>escapeHtml(a.name)).join(' · ')||'—';
   c.innerHTML=`<div class="detail-content-wrap">
     <div class="detail-hero"><div class="detail-sprite-well">${p.spriteAtlas?spriteMarkup(p,'detail-sprite'):'<div class="sprite-placeholder" style="display:grid">?</div>'}</div><div>
-      <div class="detail-id">${escapeHtml(displayId(p))}</div><h2 class="detail-title">${escapeHtml(p.displayName||p.name)}</h2><div class="detail-tags">${(p.types||[]).map(typeBadge).join('')}<span class="status-pill ${p.planned?'pending':'current'}">${p.planned?'Pending integration':'Current source'}</span></div>
+      <div class="detail-id">${escapeHtml(displayId(p))}</div><h2 class="detail-title">${escapeHtml(p.displayName||p.name)}</h2><div class="detail-tags">${(p.types||[]).map(typeBadge).join('')}<span class="status-pill ${isReviewDraft(p)?'pending':'current'}">${isReviewDraft(p)?'Review draft':'Approved roster'}</span></div>
       <div class="detail-actions"><button class="secondary-btn" id="favoriteDetail" type="button">${state.favorites.has(p.key)?'★ Favorited':'☆ Favorite'}</button><button class="secondary-btn" id="compareAdd" type="button">+ Compare</button><button class="secondary-btn" id="copyLink" type="button">Copy link</button></div>
     </div></div>
     <section class="detail-section"><h3 class="section-title">Base stats</h3>${statMarkup(p)}</section>
@@ -176,7 +227,7 @@ function openDetail(p){
     <section class="detail-section"><h3 class="section-title">Level-up moves</h3>${movesMarkup(p)}</section>
     <section class="detail-section"><h3 class="section-title">Evolution / progression</h3>${evoMarkup(p)}</section>
     <section class="detail-section"><h3 class="section-title">Mercury authority</h3><dl class="provenance-grid">
-      <dt>Roster</dt><dd>${escapeHtml(p.rosterGroup)}</dd><dt>Classification</dt><dd>${escapeHtml(p.classification||'—')}</dd><dt>Source</dt><dd>${escapeHtml(p.source||'—')}</dd><dt>Binding</dt><dd>${escapeHtml(p.bindingStatus||'—')}</dd><dt>Source constant</dt><dd>${escapeHtml(p.constant||'Not bound yet')}</dd><dt>Review ID</dt><dd>${escapeHtml(p.reviewId||'—')}</dd>${p.basePokemon?`<dt>Base identity</dt><dd>${escapeHtml(p.basePokemon)}</dd>`:''}${p.notes?`<dt>Notes</dt><dd>${escapeHtml(p.notes)}</dd>`:''}
+      <dt>Roster</dt><dd>${escapeHtml(p.rosterGroup)}</dd><dt>Design status</dt><dd>${escapeHtml(p.designStatus||(isReviewDraft(p)?'Review draft':'Approved roster'))}</dd><dt>Classification</dt><dd>${escapeHtml(p.classification||'—')}</dd><dt>Source</dt><dd>${escapeHtml(p.source||'—')}</dd><dt>Binding</dt><dd>${escapeHtml(p.bindingStatus||'—')}</dd><dt>Source constant</dt><dd>${escapeHtml(p.constant||'Not assigned')}</dd><dt>Review ID</dt><dd>${escapeHtml(p.reviewId||'—')}</dd>${p.basePokemon?`<dt>Base identity</dt><dd>${escapeHtml(p.basePokemon)}</dd>`:''}${p.notes?`<dt>Notes</dt><dd>${escapeHtml(p.notes)}</dd>`:''}
     </dl></section>
   </div>`;
   $('#favoriteDetail').addEventListener('click',()=>{toggleFavorite(p.key);$('#favoriteDetail').textContent=state.favorites.has(p.key)?'★ Favorited':'☆ Favorite';});
@@ -202,7 +253,7 @@ function openCompare(){
  const abilityNames=p=>[...(p.primaryAbilities||[]).map(x=>x.name),...(p.innates||[]).map(x=>x.name)].join(', ')||'Pending';
  const row=(label,av,bv)=>`<tr><th>${label}</th><td>${av}</td><td>${bv}</td></tr>`;
  $('#compareContent').innerHTML=`<h2>Compare</h2><div class="compare-head"><div></div>${[a,b].map(p=>`<div class="compare-name">${p.spriteAtlas?spriteMarkup(p,'compare-name-sprite'):''}<h3>${escapeHtml(p.displayName||p.name)}</h3><div>${(p.types||[]).map(typeBadge).join(' ')}</div></div>`).join('')}</div><table class="compare-table"><tbody>
- ${row('BST',a.bst??'—',b.bst??'—')}${statKeys.map(([k,n])=>row(n,a.stats?.[k]??'—',b.stats?.[k]??'—')).join('')}${row('Primary + Innates',escapeHtml(abilityNames(a)),escapeHtml(abilityNames(b)))}${row('Source',escapeHtml(a.source||'—'),escapeHtml(b.source||'—'))}${row('Status',a.planned?'Pending':'Current',b.planned?'Pending':'Current')}
+ ${row('BST',a.bst??'—',b.bst??'—')}${statKeys.map(([k,n])=>row(n,a.stats?.[k]??'—',b.stats?.[k]??'—')).join('')}${row('Primary + Innates',escapeHtml(abilityNames(a)),escapeHtml(abilityNames(b)))}${row('Source',escapeHtml(a.source||'—'),escapeHtml(b.source||'—'))}${row('Status',isReviewDraft(a)?'Review draft':'Approved roster',isReviewDraft(b)?'Review draft':'Approved roster')}
  </tbody></table>`;$('#compareDialog').showModal();
 }
 boot();

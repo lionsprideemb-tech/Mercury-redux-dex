@@ -17,10 +17,10 @@
         <div>
           <div class="eyebrow">Pokémon Mercury Redux</div>
           <h1>Mercury Dex</h1>
-          <p class="header-subtitle">The current Mercury roster, sprites, mechanics, and project status in one place.</p>
+          <p class="header-subtitle">The Mercury roster, sprites, locked mechanics, and review-ready R7 proposals in one place.</p>
         </div>
       </div>
-      <div class="header-meta" id="headerMeta">Loading R6 authority…</div>
+      <div class="header-meta" id="headerMeta">Loading R7 review pass…</div>
     </header>
 
     <main>
@@ -37,8 +37,8 @@
 
         <div class="quick-tabs" id="statusTabs" role="tablist" aria-label="Roster status">
           <button class="tab active" data-status="all" type="button">All <span id="tabAllCount"></span></button>
-          <button class="tab" data-status="current" type="button">Current <span id="tabCurrentCount"></span></button>
-          <button class="tab" data-status="planned" type="button">Pending <span id="tabPlannedCount"></span></button>
+          <button class="tab" data-status="current" type="button">Approved <span id="tabCurrentCount"></span></button>
+          <button class="tab" data-status="planned" type="button">Review drafts <span id="tabPlannedCount"></span></button>
           <button class="tab" data-status="favorites" type="button">★ Favorites <span id="tabFavoriteCount"></span></button>
         </div>
 
@@ -73,9 +73,9 @@
 
       <section class="summary-strip" aria-live="polite">
         <div><strong id="resultCount">0</strong><span>shown</span></div>
-        <div><strong id="sourceBoundCount">—</strong><span>source-bound</span></div>
+        <div><strong id="approvedCount">—</strong><span>approved roster</span></div>
+        <div><strong id="reviewDraftCount">—</strong><span>review drafts</span></div>
         <div><strong id="spriteCount">—</strong><span>sprites available</span></div>
-        <div><strong id="abilityCount">1,043</strong><span>ability IDs in R6</span></div>
       </section>
 
       <section class="dex-section">
@@ -90,7 +90,7 @@
     </main>
 
     <footer>
-      <strong>Mercury Dex</strong> is a project browser for Pokémon Mercury Redux. Data snapshot: R6 / R14-caught-up reconstruction. Pokémon is © Nintendo / Creatures / GAME FREAK. This is a non-commercial fan project.
+      <strong>Mercury Dex</strong> is a project browser for Pokémon Mercury Redux. Data snapshot: R7 NextDex review pass. Entries marked Review draft are proposals for owner review, not claimed source/runtime bindings. Pokémon is © Nintendo / Creatures / GAME FREAK. This is a non-commercial fan project.
     </footer>
   </div>
 
