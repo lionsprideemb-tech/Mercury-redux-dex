@@ -30,16 +30,13 @@ jobs:
           root = Path('.')
           parts_dir = root / 'assets/atlas_strips/.open118_r8_parts'
           parts = [parts_dir / f'part{i:02d}' for i in range(5)] + [
-              parts_dir / 'part05_0',
-              parts_dir / 'part05_1',
-              parts_dir / 'part05_2',
-              parts_dir / 'part05_3',
+              parts_dir / 'part05_correct',
               parts_dir / 'part06',
               parts_dir / 'part07',
           ]
           assert all(p.exists() for p in parts), [str(p) for p in parts if not p.exists()]
           sizes = [p.stat().st_size for p in parts]
-          assert sizes == [14500,14500,14500,14500,14500,3625,3625,3625,3625,14500,14472], sizes
+          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
 
           encoded = ''.join(p.read_text().strip() for p in parts)
           assert len(encoded) == 115972, len(encoded)
