@@ -30,13 +30,27 @@ jobs:
           root = Path('.')
           parts_dir = root / 'assets/atlas_strips/.open118_r8_parts'
           parts = [parts_dir / f'part{i:02d}' for i in range(5)] + [
-              parts_dir / 'part05_0', parts_dir / 'part05_1', parts_dir / 'part05_2', parts_dir / 'part05_3',
-              parts_dir / 'part06_0', parts_dir / 'part06_1', parts_dir / 'part06_2', parts_dir / 'part06_3',
+              parts_dir / 'part05_correct',
+              parts_dir / 'part06_correct',
               parts_dir / 'part07',
           ]
           assert all(p.exists() for p in parts), [str(p) for p in parts if not p.exists()]
           sizes = [p.stat().st_size for p in parts]
-          assert sizes == [14500,14500,14500,14500,14500,3625,3625,3625,3625,3625,3625,3625,3625,14472], sizes
+          assert sizes == [14500,14500,14500,14500,14500,14500,14500,14472], sizes
+
+          expected_chunk_hashes = [
+              'df6e2bf183a0b577e4580d114596a9737f155d4d7b9d5ba81bcfeaa6b4f7c262',
+              'a9c00ee598ae050f657294b7ce16bea03fa0fd4960268c21ef11616bccfb1cad',
+              '263150214483920dd79a59df55a928f702d7fbfb52d62d64335d3e8280e3303d',
+              '4c5f19ea5718fd8c461bc14c685399c7f3b40a83de5a21e5eb8c8da8ce05d840',
+              '785b6c938065ec17afb6d85e0c5294b594a27bb8909b533e704c6ef4ae8d9be5',
+              '6e336bc7b2a1d83923dfd9dae1355e80931f6524537d7d9c127c13f73c59ea72',
+              'ecabce485d46f7c228c0c18c05d784a2f14754f14a4592be3dfa2661ff74438c',
+              'a46d24a448df18296d8c69c7c5a8f12c72caaa428889364da7e31906d303e3e5',
+          ]
+          for p,want in zip(parts,expected_chunk_hashes):
+              got=hashlib.sha256(p.read_bytes()).hexdigest()
+              assert got == want, (p.name,got,want)
 
           encoded = ''.join(p.read_text().strip() for p in parts)
           assert len(encoded) == 115972, len(encoded)
