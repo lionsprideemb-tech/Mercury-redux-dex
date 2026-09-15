@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#121018" />
-  <meta name="description" content="Mercury Dex — searchable Pokémon Mercury Redux Pokédex with stats, abilities, Innates, moves, forms, and project sprites." />
+  <meta name="description" content="Mercury Dex — source-linked Pokémon Mercury Redux Pokédex with stats, abilities, Innates, moves, forms, and project sprites." />
   <title>Mercury Dex</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -17,10 +17,10 @@
         <div>
           <div class="eyebrow">Pokémon Mercury Redux</div>
           <h1>Mercury Dex</h1>
-          <p class="header-subtitle">The Mercury roster, sprites, locked mechanics, and review-ready R7 proposals in one place.</p>
+          <p class="header-subtitle">The approved Mercury roster, linked to the active game source and locked project designs.</p>
         </div>
       </div>
-      <div class="header-meta" id="headerMeta">Loading R7 review pass…</div>
+      <div class="header-meta" id="headerMeta">Loading source-linked Dex…</div>
     </header>
 
     <main>
@@ -35,10 +35,10 @@
           <button id="clearBtn" class="secondary-btn" type="button">Reset</button>
         </div>
 
-        <div class="quick-tabs" id="statusTabs" role="tablist" aria-label="Roster status">
+        <div class="quick-tabs" id="statusTabs" role="tablist" aria-label="Implementation status">
           <button class="tab active" data-status="all" type="button">All <span id="tabAllCount"></span></button>
-          <button class="tab" data-status="current" type="button">Approved <span id="tabCurrentCount"></span></button>
-          <button class="tab" data-status="planned" type="button">Review drafts <span id="tabPlannedCount"></span></button>
+          <button class="tab" data-status="current" type="button">In game <span id="tabCurrentCount"></span></button>
+          <button class="tab" data-status="planned" type="button">Source work <span id="tabPlannedCount"></span></button>
           <button class="tab" data-status="favorites" type="button">★ Favorites <span id="tabFavoriteCount"></span></button>
         </div>
 
@@ -73,8 +73,8 @@
 
       <section class="summary-strip" aria-live="polite">
         <div><strong id="resultCount">0</strong><span>shown</span></div>
-        <div><strong id="approvedCount">—</strong><span>approved roster</span></div>
-        <div><strong id="reviewDraftCount">—</strong><span>review drafts</span></div>
+        <div><strong id="sourceBoundCount">—</strong><span>in game source</span></div>
+        <div><strong id="sourceWorkCount">—</strong><span>approved · source work</span></div>
         <div><strong id="spriteCount">—</strong><span>sprites available</span></div>
       </section>
 
@@ -90,7 +90,7 @@
     </main>
 
     <footer>
-      <strong>Mercury Dex</strong> is a project browser for Pokémon Mercury Redux. Data snapshot: R7 NextDex review pass. Entries marked Review draft are proposals for owner review, not claimed source/runtime bindings. Pokémon is © Nintendo / Creatures / GAME FREAK. This is a non-commercial fan project.
+      <strong>Mercury Dex</strong> is the player-facing project browser for Pokémon Mercury Redux. Every listed Pokémon is approved; “Source work” means its locked design still needs to be bound into the active game source. The site is generated from the private Sinnoh-gba source authority plus locked owner design records. Pokémon is © Nintendo / Creatures / GAME FREAK. This is a non-commercial fan project.
     </footer>
   </div>
 

@@ -1,0 +1,180 @@
+name: Publish Source-Linked Mercury Dex Snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source-link-publish.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mercury-source-link-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      EXPORT_URL: 'https://sdmntpreastus2.oaiusercontent.com/files/00000000-80cc-81f6-84cf-6bbb79826fbf/raw?se=2026-09-15T05%3A55%3A57Z&sp=r&sv=2026-02-06&sr=b&scid=e336fe79-776c-5bf6-8c64-fbeafbde9d51&skoid=dd316919-ffbf-4550-9c54-dfc99f412009&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-14T18%3A58%3A09Z&ske=2026-09-15T18%3A58%3A09Z&sks=b&skv=2026-02-06&sig=ZtLVHgs6lmBr5Bq85n0suWUNcn6XSv%2BGzUqX/yHPofg%3D'
+
+    steps:
+      - name: Check out public Dex
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download verified private source export
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 "$EXPORT_URL" -o "$RUNNER_TEMP/nextdex-export.zip"
+          rm -rf "$RUNNER_TEMP/nextdex-export"
+          mkdir -p "$RUNNER_TEMP/nextdex-export"
+          unzip -q "$RUNNER_TEMP/nextdex-export.zip" -d "$RUNNER_TEMP/nextdex-export"
+          test -f "$RUNNER_TEMP/nextdex-export/playerData.json"
+          test -f "$RUNNER_TEMP/nextdex-export/approvedBaseline.json"
+
+      - name: Build source-aware public overlay shards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, gzip, json, os
+          from pathlib import Path
+
+          exp=Path(os.environ['RUNNER_TEMP'])/'nextdex-export'
+          player=json.loads((exp/'playerData.json').read_text(encoding='utf-8'))
+          baseline=json.loads((exp/'approvedBaseline.json').read_text(encoding='utf-8'))
+          meta=player['meta']
+          assert meta['sourceCommit']=='ff2640c12f6353706c4b3ad8f891e92ac52818fb', meta['sourceCommit']
+          assert meta['approvedEntries']==1599
+          assert meta['sourceBoundEntries']==1481
+          assert meta['approvedDesignRecords']==118
+          assert meta['retiredEntries']==4
+
+          bmap={p['key']:p for p in baseline['pokemon']}
+          pmap={p['key']:p for p in player['pokemon']}
+          removed=[k for k in bmap if k not in pmap]
+          assert len(removed)==4, removed
+
+          keep={
+              'id','name','displayName','category','types','stats','bst','description','evolutions',
+              'levelUpMoves','sourceAbilities','primaryAbilities','innates','isMegaEvolution',
+              'publicConstant','sourceConstant','integrationState','approvalStatus','classification','source',
+              'notes','designStatus','mechanicsStatus','graphicsStatus','primaryLocked','basePokemon',
+              'familyMethod','implementationRequirement','reviewId','rosterGroup'
+          }
+          patches=[]
+          sentinel=object()
+          for key,b in bmap.items():
+              p=pmap.get(key)
+              if not p:
+                  continue
+              setd={}
+              for field in keep:
+                  pv=p.get(field,sentinel); bv=b.get(field,sentinel)
+                  if pv!=bv:
+                      setd[field]=None if pv is sentinel else pv
+              if setd:
+                  patches.append({'key':key,'set':setd})
+
+          out=Path('data/pokedex')
+          for old in out.glob('source_overlay_*.json.gz.b64'):
+              old.unlink()
+          overlays=[]
+          chunks=10
+          n=len(patches)
+          for i in range(chunks):
+              start=round(i*n/chunks); end=round((i+1)*n/chunks)
+              obj={'patches':patches[start:end], 'removeKeys':removed if i==0 else []}
+              raw=json.dumps(obj,ensure_ascii=False,separators=(',',':')).encode('utf-8')
+              b64=base64.b64encode(gzip.compress(raw,compresslevel=9)).decode('ascii')
+              name=f'source_overlay_{i:02d}.json.gz.b64'
+              (out/name).write_text(b64,encoding='ascii')
+              overlays.append(name)
+
+          public_meta=dict(meta)
+          public_meta.update({
+              'title':'Mercury Dex',
+              'version':'Source-linked R7',
+              'generated':'2026-09-15',
+              'entries':1599,
+              'rosterCount':1599,
+              'approvedRosterCount':1599,
+              'sourceBoundCount':1481,
+              'sourceWorkOpenCount':118,
+              'retiredCount':4,
+              'spriteCount':sum(1 for p in player['pokemon'] if p.get('spriteAtlas')),
+              'sourceAuthority':'Sinnoh-gba game source + locked owner design records',
+              'statusModel':'approved-roster-with-implementation-state',
+              'spriteFormat':'strip-atlas-v2-b64',
+          })
+          index={
+              'meta':public_meta,
+              'shards':[f'shard_{i:02d}.json.gz.b64' for i in range(17)],
+              'overlays':overlays,
+              'count':1599,
+          }
+          (out/'index.json').write_text(json.dumps(index,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          print(f'Built {len(overlays)} source overlays for {len(player["pokemon"])} approved entries.')
+          PY
+
+      - name: Validate source-aware public roster
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app.js
+          python3 - <<'PY'
+          import base64,gzip,json
+          from pathlib import Path
+          p=Path('data/pokedex')
+          idx=json.loads((p/'index.json').read_text())
+          assert idx['count']==1599
+          assert idx['meta']['sourceBoundCount']==1481
+          assert idx['meta']['sourceWorkOpenCount']==118
+          assert idx['meta']['retiredCount']==4
+          assert len(idx['overlays'])==10
+          patches=0; removed=[]
+          for name in idx['overlays']:
+              obj=json.loads(gzip.decompress(base64.b64decode((p/name).read_text())))
+              patches += len(obj.get('patches',[]))
+              removed += obj.get('removeKeys',[])
+          assert patches==1599
+          assert len(removed)==4
+          print(f'Validated {patches} source-aware rows; retired keys: {removed}')
+          PY
+
+      - name: Write source-link record
+        shell: bash
+        run: |
+          cat > SOURCE_LINKED_NEXTDEX.md <<'EOF'
+          # Mercury Dex — Source-linked authority
+
+          The public Mercury Dex is now generated from the private `Sinnoh-gba` game-source export plus explicitly locked owner design records.
+
+          Current snapshot:
+          - 1,599 approved player-facing entries
+          - 1,481 source-bound or source-reclassified entries
+          - 118 approved design records with source implementation still open
+          - 4 retired axe-line Redux Honedge-family entries removed
+          - No Pending Pokémon approval state
+
+          `Regalibur` and `Arbalistia` are the public identities reclassified from the former Mega Aegislash source slots. The retired axe Redux Honedge / Doublade / Aegislash family is not part of the active roster.
+
+          Source snapshot: `ff2640c12f6353706c4b3ad8f891e92ac52818fb`
+          EOF
+
+      - name: Commit source-linked Dex snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Mercury Redux NextDex Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          rm -f R7_REVIEW_NOTES.md
+          git rm --ignore-unmatch .github/workflows/source-link-publish.yml || true
+          git add app.js index.html data/pokedex/index.json data/pokedex/source_overlay_*.json.gz.b64 SOURCE_LINKED_NEXTDEX.md R7_REVIEW_NOTES.md 2>/dev/null || true
+          git add -u
+          git commit -m 'Publish source-linked Mercury NextDex snapshot'
+          git push
