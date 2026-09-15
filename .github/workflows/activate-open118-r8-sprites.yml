@@ -36,12 +36,24 @@ jobs:
 
           logical = [text(f'part{i:02d}') for i in range(5)]
           logical.append(text('part05_correct'))
-          logical.append(''.join([
-              text('part06_0'),
-              text('part06_1'),
-              text('part06_2_0'), text('part06_2_1'), text('part06_2_2'), text('part06_2_3'),
-              text('part06_3'),
-          ]))
+
+          p6_names = ['part06a','part06b','part06c','part06d','part06e']
+          p6_sizes = [3000,3000,3000,3000,2500]
+          p6_hashes = [
+              '34e0b60de1e58ddfc48eda5f57799156a5fd2f0919552708c4470ea474a28e5f',
+              'a4d00e724f6a6f9d299bea17fbf130984115c128bff24d19eeeacf35d3ea8037',
+              '991145524e035876a154f3ab4bd9bd95a406cf93a7185535ec12a520aaa035b4',
+              '4e4da8cc7f49e77c5ca9fc303d1433c47b5404f159ea592b638af4a98a1e70b1',
+              '2238b6e1df479ddeb38c1d3e2b2a4454e1484e2831b86d2c8a9d89255f184961',
+          ]
+          p6=[]
+          for name,size,want in zip(p6_names,p6_sizes,p6_hashes):
+              s=text(name)
+              assert len(s)==size,(name,len(s),size)
+              got=hashlib.sha256(s.encode()).hexdigest()
+              assert got==want,(name,got,want)
+              p6.append(s)
+          logical.append(''.join(p6))
           logical.append(text('part07'))
 
           sizes = [len(x) for x in logical]
