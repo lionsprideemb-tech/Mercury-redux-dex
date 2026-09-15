@@ -1,0 +1,132 @@
+name: Publish completed 118 design records
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publish-completed-118.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build verified completion overlay
+        shell: python
+        run: |
+          import base64,gzip,json
+          from pathlib import Path
+          root=Path('.')
+          idx_path=root/'data/pokedex/index.json'
+          idx=json.loads(idx_path.read_text())
+          def load(path):
+              raw=base64.b64decode(Path(path).read_text().strip())
+              if raw[:2]==b'\x1f\x8b': raw=gzip.decompress(raw)
+              return json.loads(raw)
+          rows=[]
+          for n in idx['shards']:
+              rows += load(root/'data/pokedex'/n).get('pokemon',[])
+          current=[json.loads(json.dumps(p)) for p in rows]
+          bykey={p.get('key'):p for p in current if p.get('key')}
+          # Apply only the source-linked overlays first; ignore a prior completion overlay if rerun.
+          source_overlays=[n for n in idx.get('overlays',[]) if n!='design_completion_118.json.gz.b64']
+          for oname in source_overlays:
+              ov=load(root/'data/pokedex'/oname)
+              for item in ov.get('patches',[]):
+                  p=bykey.get(item.get('key'))
+                  if p is not None: p.update(item.get('set') or {})
+              for item in ov.get('additions',[]):
+                  k=item.get('key')
+                  if not k or k in bykey: continue
+                  p=dict(item);p.update(item.get('set') or {});p.pop('set',None);current.append(p);bykey[k]=p
+              rem=set(ov.get('removeKeys',[]))
+              current=[p for p in current if p.get('key') not in rem]
+              bykey={p.get('key'):p for p in current if p.get('key')}
+          byconst={};byname={}
+          for p in current:
+              for k in ('constant','publicConstant','sourceConstant'):
+                  if p.get(k):byconst[p[k]]=p
+              for n in (p.get('displayName'),p.get('name')):
+                  if n:byname[n]=p
+          r7=load(root/'data/pokedex/review_overlay_r7.json.gz.b64')
+          ability_by_name={}
+          for p in current:
+              for g in ('primaryAbilities','innates','sourceAbilities'):
+                  for a in p.get(g) or []:
+                      if isinstance(a,dict) and a.get('name'):ability_by_name[a['name']]=a
+          for n,a in r7.get('abilityDefinitions',{}).items():
+              if isinstance(a,dict):ability_by_name[n]=a
+          def ability(n):return json.loads(json.dumps(ability_by_name.get(n) or {'name':n,'description':'Mercury design ability.'}))
+          def find(ref):return bykey.get(ref) or byconst.get(ref) or byname.get(ref)
+          openkeys={p.get('key') for p in current if p.get('integrationState')=='APPROVED_DESIGN_RECORD'}
+          items={x['key']:x for x in r7.get('patches',[])+r7.get('additions',[]) if x.get('key') in openkeys}
+          if len(openkeys)!=118:raise SystemExit(f'Expected 118 open design records, found {len(openkeys)}')
+          if set(items)!=openkeys:raise SystemExit(f'R7 coverage mismatch: missing {sorted(openkeys-set(items))}')
+          patches=[]
+          for key in sorted(openkeys):
+              item=items[key];cur=bykey[key];p=json.loads(json.dumps(cur));base=find(item.get('inheritFrom')) if item.get('inheritFrom') else None
+              if base:
+                  forced=set(item.get('forceInherit') or [])
+                  for f in ('stats','bst','description','levelUpMoves','sourceAbilities'):
+                      val=p.get(f);blank=val is None or val==[] or val=={} or val=='' or (f=='stats' and not any(v is not None for v in (val or {}).values()))
+                      if f in forced or blank:p[f]=json.loads(json.dumps(base.get(f)))
+                  if not p.get('spriteAtlas') and base.get('spriteAtlas'):p['baseSpriteFallback']=json.loads(json.dumps(base.get('spriteAtlas')))
+              s=json.loads(json.dumps(item.get('set') or {}));prim=s.pop('primaryAbilityNames',None);inn=s.pop('innateNames',None);p.update(s)
+              if prim is not None:p['primaryAbilities']=[ability(x) for x in prim]
+              if inn is not None:p['innates']=[ability(x) for x in inn]
+              if item.get('extraMoves'):
+                  moves=json.loads(json.dumps(p.get('levelUpMoves') or []));seen={(m.get('level'),m.get('move')) for m in moves}
+                  for m in item['extraMoves']:
+                      sig=(m.get('level'),m.get('move'))
+                      if sig not in seen:moves.append(json.loads(json.dumps(m)));seen.add(sig)
+                  def lv(m):
+                      try:return int(m.get('level'))
+                      except:return 999
+                  moves.sort(key=lambda m:(lv(m),str(m.get('move'))));p['levelUpMoves']=moves
+              set_fields={}
+              for f in ('displayName','name','basePokemon','familyMethod','types','stats','bst','description','primaryAbilities','innates','sourceAbilities','levelUpMoves','evolutions','classification','source','rosterGroup','constant','publicConstant','sourceConstant','nationalDex','primaryLocked','baseSpriteFallback'):
+                  if f in p:set_fields[f]=p[f]
+              set_fields.update({
+                  'designStatus':'Completed — owner-authorized fill pass',
+                  'mechanicsStatus':'Complete design package; game-source implementation open',
+                  'reviewDraft':False,
+                  'approvalStatus':'APPROVED',
+                  'integrationState':'APPROVED_DESIGN_RECORD',
+                  'recoverySource':'R7 materialized package + current source-linked base data',
+              })
+              patches.append({'key':key,'set':set_fields})
+          def statok(s):return all((s or {}).get(k) is not None for k in ('hp','atk','def','spa','spd','spe'))
+          complete=[]
+          for x in patches:
+              s=x['set'];ok=bool(s.get('types')) and statok(s.get('stats')) and bool(s.get('primaryAbilities')) and len(s.get('innates') or [])>=3 and bool(s.get('levelUpMoves'))
+              if ok:complete.append(x['key'])
+          if len(complete)!=118:raise SystemExit(f'Completion validation failed: {len(complete)}/118')
+          overlay={'meta':{'project':'Pokémon Mercury Redux','generated':'2026-09-15','recordCount':118,'mechanicsComplete':True,'policy':'Owner-authorized completion of previously open design records; ROM/source implementation state remains separate.'},'patches':patches}
+          raw=json.dumps(overlay,separators=(',',':'),ensure_ascii=False).encode()
+          encoded=base64.b64encode(gzip.compress(raw,9)).decode()
+          (root/'data/pokedex/design_completion_118.json.gz.b64').write_text(encoded)
+          idx['overlays']=source_overlays+['design_completion_118.json.gz.b64']
+          idx['meta']['approvedDesignRecords']=118
+          idx['meta']['completedDesignRecords']=118
+          idx['meta']['designDataCompleteCount']=118
+          idx['meta']['sourceWorkOpenCount']=118
+          idx['meta']['policy']='Every roster row is approved. All 118 source-work-open records now have complete design-facing mechanics; integration state still tracks ROM/source implementation separately.'
+          idx_path.write_text(json.dumps(idx,separators=(',',':')))
+          print('Validated and published complete mechanics for 118/118 design records.')
+      - name: Commit completion layer
+        shell: bash
+        run: |
+          git config user.name "Mercury Redux NextDex Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/pokedex/design_completion_118.json.gz.b64 data/pokedex/index.json
+          if git diff --cached --quiet; then
+            echo "No completion changes to commit."
+          else
+            git commit -m "Complete all 118 open Mercury design records"
+            git push
+          fi
