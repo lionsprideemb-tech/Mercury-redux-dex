@@ -1,0 +1,47 @@
+name: Audit R8 completion overlap
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audit-r8-overlap.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare completion overlays
+        shell: python
+        run: |
+          import base64,gzip,json
+          from pathlib import Path
+          def load(p):
+              raw=base64.b64decode(Path(p).read_text().strip())
+              if raw[:2]==b'\x1f\x8b':raw=gzip.decompress(raw)
+              return json.loads(raw)
+          a=load('data/pokedex/completion_overlay_r8.json.gz.b64')
+          b=load('data/pokedex/design_completion_118.json.gz.b64')
+          pa={x['key']:x.get('set',{}) for x in a.get('patches',[])}
+          pb={x['key']:x.get('set',{}) for x in b.get('patches',[])}
+          print('completion_overlay_r8 patches',len(pa))
+          print('design_completion_118 patches',len(pb))
+          print('overlap',len(set(pa)&set(pb)))
+          print('only r8',sorted(set(pa)-set(pb)))
+          print('only design',sorted(set(pb)-set(pa)))
+          diffs=[]
+          for k in sorted(set(pa)&set(pb)):
+              fields=set(pa[k])|set(pb[k]); changed=[]
+              for f in sorted(fields):
+                  if pa[k].get(f)!=pb[k].get(f):changed.append(f)
+              if changed:diffs.append((k,changed))
+          print('records with differences',len(diffs))
+          for k,fields in diffs[:150]:print(k,','.join(fields))
+          Path('r8_overlap_audit.json').write_text(json.dumps({'r8Count':len(pa),'designCount':len(pb),'overlap':len(set(pa)&set(pb)),'differences':diffs},indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r8-overlap-audit
+          path: r8_overlap_audit.json
