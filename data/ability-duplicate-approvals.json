@@ -86,7 +86,7 @@
     "14": {
       "action": "change-effect",
       "target": "0",
-      "value": "Slicing moves deal 20% more damage. Once per turn, after this Pokémon is hit by a contact move, its next slicing move gains +1 priority.",
+      "value": "Slicing moves deal 20% more damage. The first contact move to hit this Pokémon each turn deals 25% less damage; after that hit, this Pokémon’s next slicing move gains +1 priority.",
       "notes": "Combine both Blademaster entries into one canonical Blademaster with a new Mercury-designed effect."
     },
     "15": {
