@@ -1,0 +1,50 @@
+{
+  "project": "Pokemon Mercury Redux",
+  "kind": "duplicate-ability-final-resolutions",
+  "version": 1,
+  "status": "complete",
+  "totalFamilies": 97,
+  "resolvedFamilies": 97,
+  "customResolutions": [
+    {
+      "familyId": 14,
+      "canonicalName": "Blademaster",
+      "action": "combine-and-redesign",
+      "sourceRows": [
+        126,
+        909
+      ],
+      "finalEffect": "Slicing moves deal 20% more damage. Once per turn, after this Pokémon is hit by a contact move, its next slicing move gains +1 priority.",
+      "designNote": "Combines the shared Blademaster identity into one deterministic sword/parry ability."
+    },
+    {
+      "familyId": 64,
+      "action": "rename-and-delete-empty",
+      "entries": [
+        {
+          "masterRow": 48,
+          "finalName": "Septic Fangs",
+          "effectPolicy": "Preserve sourced mechanic: biting moves may badly poison."
+        },
+        {
+          "masterRow": 262,
+          "finalName": "Emergency Decoy",
+          "effectPolicy": "Preserve sourced mechanic: decoys after weakened; exact trigger remains subject to implementation verification."
+        },
+        {
+          "masterRow": 354,
+          "action": "delete",
+          "reason": "Source entry has no ability effect."
+        }
+      ]
+    },
+    {
+      "familyId": 101,
+      "canonicalName": "Athenian",
+      "action": "redesign-effect",
+      "sourceRow": 942,
+      "finalEffect": "The first status move this Pokémon uses each time it enters battle gains +1 priority. After that move resolves, its next damaging move deals 30% more damage.",
+      "designNote": "Feline Prowess remains the Special Huge Power mechanic; Athenian becomes a tactical sequencing ability."
+    }
+  ]
+}
