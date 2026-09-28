@@ -12,6 +12,8 @@ on:
       - 'ability-duplicate-approval.html'
       - 'ability-game-health-audit.html'
       - 'ability-game-health-approval.html'
+      - 'sprite-audit-review.html'
+      - 'sprite-audit-pairs.json'
       - '.nojekyll'
       - 'assets/**'
       - 'data/**'
@@ -56,6 +58,45 @@ jobs:
           cp -a ability-duplicate-approval.html _site/ 2>/dev/null || true
           cp -a ability-game-health-audit.html _site/ 2>/dev/null || true
           cp -a ability-game-health-approval.html _site/ 2>/dev/null || true
+          cp -a sprite-audit-review.html sprite-audit-pairs.json _site/
+
+      - name: Build sprite audit comparison assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE=/tmp/DS01_Expanded_Community_Sprite_Library_2026-09-22.zip
+          curl -L --fail --retry 3 \
+            -o "$ARCHIVE" \
+            "https://raw.githubusercontent.com/lionsprideemb-tech/platinum-modern-ds/803d6c02161bc567d05543bbeedb48bb8ca8dc7f/staging-assets/community-sprites/2026-09-22/DS01_Expanded_Community_Sprite_Library_2026-09-22.zip"
+          python - <<'PY'
+          import json
+          import pathlib
+          import zipfile
+
+          archive = pathlib.Path("/tmp/DS01_Expanded_Community_Sprite_Library_2026-09-22.zip")
+          out = pathlib.Path("_site/sprite-audit-assets")
+          out.mkdir(parents=True, exist_ok=True)
+          pairs = json.loads(pathlib.Path("sprite-audit-pairs.json").read_text(encoding="utf-8"))
+
+          with zipfile.ZipFile(archive) as z:
+              names = z.namelist()
+              for pair in pairs:
+                  for key in ("a", "b"):
+                      folder = pair[key]
+                      for view in ("front", "back"):
+                          candidates = (
+                              f"/hg_engine_ready/data/graphics/sprites/{folder}/male/{view}.png",
+                              f"/hg_engine_ready/data/graphics/sprites/{folder}/female/{view}.png",
+                          )
+                          member = next(
+                              (name for suffix in candidates for name in names if name.endswith(suffix)),
+                              None,
+                          )
+                          if member is None:
+                              raise SystemExit(f"Missing sprite asset: {folder} {view}")
+                          (out / f"{folder}_{view}.png").write_bytes(z.read(member))
+          PY
+          test "$(find _site/sprite-audit-assets -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 124
 
       - name: Verify complete Mercury Dex payload
         shell: bash
@@ -67,9 +108,12 @@ jobs:
           test -f _site/ability-duplicate-approval.html
           test -f _site/ability-game-health-audit.html
           test -f _site/ability-game-health-approval.html
+          test -f _site/sprite-audit-review.html
+          test -f _site/sprite-audit-pairs.json
           test -f _site/data/pokedex/index.json
           SHARDS=$(find _site/data/pokedex -maxdepth 1 -type f -name 'shard_*.json.gz.b64' | wc -l)
           STRIPS=$(find _site/assets/atlas_strips -maxdepth 1 -type f -name '*.webp.b64' | wc -l)
+          SPRITE_AUDIT_IMAGES=$(find _site/sprite-audit-assets -maxdepth 1 -type f -name '*.png' | wc -l)
           if [ "$SHARDS" -ne 17 ]; then
             echo "Expected 17 Mercury Dex data shards, found $SHARDS."
             exit 1
@@ -78,7 +122,11 @@ jobs:
             echo "Expected at least 21 Mercury sprite strips, found $STRIPS."
             exit 1
           fi
-          echo "Mercury Dex payload verified: $SHARDS data shards, $STRIPS sprite strips."
+          if [ "$SPRITE_AUDIT_IMAGES" -ne 124 ]; then
+            echo "Expected 124 sprite-audit images, found $SPRITE_AUDIT_IMAGES."
+            exit 1
+          fi
+          echo "Mercury Dex payload verified: $SHARDS data shards, $STRIPS sprite strips, $SPRITE_AUDIT_IMAGES audit images."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
