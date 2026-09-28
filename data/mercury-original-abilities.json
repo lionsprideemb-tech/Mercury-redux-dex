@@ -160,6 +160,77 @@
       ],
       "origin": "Mercury custom/source-bound ability with Elite Redux-derived supporting innates.",
       "duplicatePolicy": null
+    },
+    {
+      "name": "Unyielding",
+      "id": "MERCURY_UNYIELDING",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "When an opponent causes one of the user's stats to drop, raise the user's Defense and Special Defense by 1 stage.",
+      "users": [],
+      "origin": "Mercury Ability Audit replacement for the retired Inversion slot.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Pack Tactics",
+      "id": "MERCURY_PACK_TACTICS",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "Damage is multiplied by 1.2 while the user has at least one conscious party teammate. If the user has an active doubles partner, damage is multiplied by 1.3 instead. The bonuses do not stack.",
+      "users": [],
+      "origin": "Mercury Ability Audit replacement for the retired Minion Control slot.",
+      "duplicatePolicy": "Mercury override of the same-name Pokémon Exceeded ability."
+    },
+    {
+      "name": "First Strike",
+      "id": "MERCURY_FIRST_STRIKE",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "The first damaging move the user uses after each entry gains +1 priority. Status moves do not consume the effect.",
+      "users": [],
+      "origin": "Mercury Ability Audit replacement for the retired Surprise! slot.",
+      "duplicatePolicy": "Mercury override of the same-name Pokémon Exceeded ability."
+    },
+    {
+      "name": "Bloodhound",
+      "id": "MERCURY_BLOODHOUND",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "A foe directly damaged by the user becomes marked. If that foe switches out, the replacement loses 1/8 of its maximum HP once.",
+      "users": [],
+      "origin": "Mercury Ability Audit replacement for the retired Tag slot.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Grand Choreography",
+      "id": "MERCURY_GRAND_CHOREOGRAPHY",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "Includes Dancer. After the user successfully uses a Dance move, it follows with one 50-BP Revelation Dance. Revelation Dance checks Fire, Electric, Psychic, and Ghost effectiveness; if any is super effective, the final effectiveness is exactly 2× and never stacks to 4× from multiple matching weaknesses.",
+      "users": [
+        "Mega Oricorio"
+      ],
+      "origin": "Mercury Ability Audit replacement for the retired Color Spectrum slot.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Overexertion",
+      "id": "MERCURY_OVEREXERTION",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "The user may act every turn. After using a damaging move, it loses 10% of its maximum HP. Status moves do not cause the HP loss. This signature ability is protected against suppression, copying, and overwriting.",
+      "users": [
+        "Mega Slaking"
+      ],
+      "origin": "Mercury Ability Audit replacement for the retired Ape Shift slot.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Ancient Script",
+      "id": "MERCURY_ANCIENT_SCRIPT",
+      "status": "LOCKED_ABILITY_AUDIT_BRANCH_MERGE_PENDING",
+      "effect": "Hidden Power receives ordinary STAB plus an additional 1.3× damage multiplier.",
+      "users": [
+        "Unown / Mercury Revelation-slot replacement"
+      ],
+      "origin": "Mercury Ability Audit replacement for the retired Revelation slot.",
+      "duplicatePolicy": null
     }
-  ]
+  ],
+  "abilityCount": 22,
+  "notes": "Mercury-authored catalog includes current signature abilities, Mercury redesigns/adaptations, and locked Ability Audit replacement mechanics. Entries marked branch-merge-pending are finalized designs but are not claimed merged into the current production line."
 }
