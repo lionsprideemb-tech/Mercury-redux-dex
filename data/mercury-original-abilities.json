@@ -1,0 +1,165 @@
+{
+  "project": "Pokemon Mercury Redux",
+  "kind": "mercury-original-abilities",
+  "version": 1,
+  "status": "catalog-finalized",
+  "abilities": [
+    {
+      "name": "Blademaster",
+      "id": "MERCURY_BLADEMASTER",
+      "status": "FINAL_MERCURY_DESIGN",
+      "effect": "Slicing moves deal 20% more damage. The first contact move to hit this Pokémon each turn deals 25% less damage; after that hit, this Pokémon’s next slicing move gains +1 priority.",
+      "users": [],
+      "origin": "Mercury redesign combining the duplicate Blademaster family.",
+      "duplicatePolicy": "Supersedes the sourced Blademaster variants for Mercury."
+    },
+    {
+      "name": "Septic Fangs",
+      "id": "MERCURY_SEPTIC_FANGS",
+      "status": "NAME_FINAL_EFFECT_NEEDS_SOURCE_VERIFICATION",
+      "effect": "Biting moves may badly poison.",
+      "users": [],
+      "origin": "Mercury name for the first Pokémon Exceeded placeholder ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Emergency Decoy",
+      "id": "MERCURY_EMERGENCY_DECOY",
+      "status": "NAME_FINAL_EFFECT_NEEDS_SOURCE_VERIFICATION",
+      "effect": "Creates/uses a decoy after the user becomes weakened.",
+      "users": [],
+      "origin": "Mercury name for the second Pokémon Exceeded placeholder ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Athenian",
+      "id": "MERCURY_ATHENIAN",
+      "status": "FINAL_MERCURY_REDESIGN",
+      "effect": "The first status move this Pokémon uses each time it enters battle gains +1 priority. After that move resolves, its next damaging move deals 30% more damage.",
+      "users": [],
+      "origin": "Mercury redesign of Pokémon Insurgence's Athenian to remove the duplicate 2× Sp. Atk mechanic.",
+      "duplicatePolicy": "Mercury's Athenian effect supersedes the sourced Athenian effect in Mercury; Feline Prowess retains the 2× Sp. Atk identity."
+    },
+    {
+      "name": "Aura Mantle",
+      "id": "MERCURY_AURA_MANTLE",
+      "status": "LOCKED",
+      "effect": "Contact damage taken is reduced by 40%. Aura/Pulse moves heal the user for 25% of damage dealt.",
+      "users": [
+        "Mega Lucario Z"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Sand Skimmer",
+      "id": "MERCURY_SAND_SKIMMER",
+      "status": "LOCKED",
+      "effect": "The user takes no sandstorm chip damage. While sand is active, its Speed is multiplied by 1.30 and damaging Ground-type moves cannot hit it; the Ground immunity ends when sand ends.",
+      "users": [
+        "Mega Garchomp Z"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Calamity Edge",
+      "id": "MERCURY_CALAMITY_EDGE",
+      "status": "LOCKED",
+      "effect": "Slicing moves deal 30% more damage and ignore the target's positive Defense stages.",
+      "users": [
+        "Mega Absol Z"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Permafrost",
+      "id": "MERCURY_PERMAFROST_BAXCALIBUR",
+      "status": "LOCKED_MERCURY_OVERRIDE",
+      "effect": "Super-effective damage taken is multiplied by 0.65.",
+      "users": [
+        "Mega Baxcalibur"
+      ],
+      "origin": "Mercury-specific Permafrost version for Mega Baxcalibur.",
+      "duplicatePolicy": "Intentional Mercury override; do not merge with the sourced 25% reduction version."
+    },
+    {
+      "name": "Tactical Withdrawal",
+      "id": "MERCURY_TACTICAL_WITHDRAWAL",
+      "status": "LOCKED",
+      "effect": "Once per switch-in, if an opposing damaging hit drops the user from above 50% HP to 50% HP or less, it queues a withdrawal at the end of the turn after its own action. Indirect or self-damage does not trigger it, and fainting cancels the withdrawal.",
+      "users": [
+        "Mega Golisopod"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Dam Builder",
+      "id": "MERCURY_DAM_BUILDER",
+      "status": "LOCKED_DESIGN_IMPLEMENTATION_PENDING",
+      "effect": "On entry, raises Defense and Special Defense by 1 stage. Once per switch-in, when an opposing damaging move drops the user from above 50% HP to 50% HP or less, it triggers an Attack-based Surf-style Dam Break that hits opposing Pokémon but not the ally. The trigger does not rearm by healing and indirect damage does not activate it.",
+      "users": [
+        "Mega Bibarel (Youngster Martin)"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Nerve Agent",
+      "id": "MERCURY_NERVE_AGENT",
+      "status": "LOCKED_DESIGN_IMPLEMENTATION_PENDING",
+      "effect": "After a successful damaging contact Poison-type move, make one 30% status roll per target per move. On success, choose Poison or Paralysis 50/50, falling back to the other if the chosen status is invalid. Multi-hit moves do not roll once per hit, and an existing major status is not replaced.",
+      "users": [
+        "Mega Drapion (Jupiter)"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Ballistic Muscle",
+      "id": "MERCURY_BALLISTIC_MUSCLE",
+      "status": "LOCKED",
+      "effect": "Damaging Special-category moves use the user's Attack stat instead of Special Attack for damage calculation while remaining Special and still targeting the foe's Special Defense.",
+      "users": [
+        "Mega Rhyperior (Saturn)"
+      ],
+      "origin": "Mercury signature innate.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Siege Engine",
+      "id": "MERCURY_SIEGE_ENGINE",
+      "status": "LOCKED_DESIGN_IMPLEMENTATION_PENDING",
+      "effect": "Siege-tagged attacks deal 30% more damage. Recoil and crash damage caused by the user's own moves is prevented. This does not prevent Life Orb recoil, Struggle recoil, or explicit self-KO effects such as Explosion.",
+      "users": [
+        "Mega Rhyperior (Saturn)"
+      ],
+      "origin": "Mercury signature ability.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Crown Breaker",
+      "id": "MERCURY_CROWN_BREAKER",
+      "status": "SOURCE_BOUND_LOCKED",
+      "effect": "Physical Dragon- and Fighting-type moves ignore the target's positive Defense stages; negative Defense stages still apply normally.",
+      "users": [
+        "Delta Tyrantrum"
+      ],
+      "origin": "Mercury Redux original, source-bound in the reconciled branch.",
+      "duplicatePolicy": null
+    },
+    {
+      "name": "Toxic Hellfire",
+      "id": "MERCURY_TOXIC_HELLFIRE",
+      "status": "SOURCE_BOUND_LOCKED",
+      "effect": "Damaging Fire-type moves have at least a 20% chance to burn. Poison-type moves can poison Poison- and Steel-type targets. Dark-type moves deal 1.25× damage to burned or poisoned targets.",
+      "users": [
+        "Mega Houndoom Z"
+      ],
+      "origin": "Mercury custom/source-bound ability with Elite Redux-derived supporting innates.",
+      "duplicatePolicy": null
+    }
+  ]
+}
