@@ -10,6 +10,7 @@ on:
       - 'app.js'
       - 'styles.css'
       - 'ability-duplicate-approval.html'
+      - 'ability-game-health-approval.html'
       - '.nojekyll'
       - 'assets/**'
       - 'data/**'
@@ -52,6 +53,7 @@ jobs:
           fi
           # Standalone interactive review tools live outside the archived Dex payload.
           cp -a ability-duplicate-approval.html _site/ 2>/dev/null || true
+          cp -a ability-game-health-approval.html _site/ 2>/dev/null || true
 
       - name: Verify complete Mercury Dex payload
         shell: bash
@@ -61,6 +63,7 @@ jobs:
           test -f _site/app.js
           test -f _site/styles.css
           test -f _site/ability-duplicate-approval.html
+          test -f _site/ability-game-health-approval.html
           test -f _site/data/pokedex/index.json
           SHARDS=$(find _site/data/pokedex -maxdepth 1 -type f -name 'shard_*.json.gz.b64' | wc -l)
           STRIPS=$(find _site/assets/atlas_strips -maxdepth 1 -type f -name '*.webp.b64' | wc -l)
