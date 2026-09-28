@@ -1,0 +1,119 @@
+{
+  "project": "Pokemon Mercury Redux",
+  "kind": "ability-game-health-audit",
+  "version": 1,
+  "benchmark": "Flag abilities when informed planning stops mattering: unstable hidden rule changes, control removal, unavoidable/recursive outcomes, or degenerate Primary+Innate interactions. Raw power alone is not a problem.",
+  "canonicalPoolSize": 913,
+  "candidates": [
+    {
+      "id": 1,
+      "name": "PRISMATIC FUR",
+      "source": "Elite Redux",
+      "effect": "Color Change + Protean + Fur Coat + Ice Scales",
+      "recommendation": "Redesign",
+      "tier": "RED",
+      "reason": "Both attacking and being hit continually rewrite typing while Fur Coat and Ice Scales blunt both damage categories. Even with full knowledge, the opponent lacks a stable matchup plan.",
+      "confidence": "Exact source comment"
+    },
+    {
+      "id": 2,
+      "name": "Stop \\\\PN",
+      "source": "Pokémon Rejuvenation",
+      "effect": "One version progressively disables a newly entered foe's ability, then typing, then moves; raid-shield events can also alter the state.",
+      "recommendation": "Boss/raid only",
+      "tier": "RED",
+      "reason": "It progressively deletes the opponent's battle rules and options rather than asking the player to solve a stable mechanic.",
+      "confidence": "Verified wiki mechanics"
+    },
+    {
+      "id": 3,
+      "name": "Storm-9",
+      "source": "Pokémon Rejuvenation",
+      "effect": "Summons a random weather on entry and changes to another random weather every turn; also has weather-related extras.",
+      "recommendation": "Redesign",
+      "tier": "RED",
+      "reason": "The field rules can change unpredictably every turn, invalidating weather-dependent planning without a player decision.",
+      "confidence": "Verified wiki mechanics"
+    },
+    {
+      "id": 4,
+      "name": "Commissioner",
+      "source": "Radical Red Showdown mod (CAP/test entry)",
+      "effect": "At end of turn randomly gains +1 Speed, Torments a foe, gains +1 Defense, forces a foe out, or gains Aqua Ring.",
+      "recommendation": "Exclude unchanged",
+      "tier": "RED",
+      "reason": "The outcomes are materially different battle states, including forced switching, and cannot be planned around reliably.",
+      "confidence": "Exact Showdown implementation description"
+    },
+    {
+      "id": 5,
+      "name": "Berserk Fury",
+      "source": "Pokémon Exceeded",
+      "effect": "Ups Attack, use random move.",
+      "recommendation": "Verify first",
+      "tier": "ORANGE",
+      "reason": "If it literally forces random move selection, it removes player control rather than creating strategic uncertainty.",
+      "confidence": "Terse in-game summary"
+    },
+    {
+      "id": 6,
+      "name": "Eternal Life",
+      "source": "Pokémon Exceeded",
+      "effect": "Revives after 15 turns.",
+      "recommendation": "Verify first",
+      "tier": "ORANGE",
+      "reason": "A 15-turn revival is predictable; the concern is only whether it can repeat indefinitely and create a stall/revival loop.",
+      "confidence": "Terse in-game summary"
+    },
+    {
+      "id": 7,
+      "name": "Hollow Shell",
+      "source": "Pokémon Exceeded",
+      "effect": "Faints the attacker when KOed.",
+      "recommendation": "Keep / watch",
+      "tier": "YELLOW",
+      "reason": "Harsh but deterministic. The concern is forced one-for-one trades and revival/sacrifice combinations, not unpredictability.",
+      "confidence": "Terse in-game summary"
+    },
+    {
+      "id": 8,
+      "name": "Mind Game",
+      "source": "Pokémon Exceeded",
+      "effect": "Prevents move usage.",
+      "recommendation": "Verify first",
+      "tier": "ORANGE",
+      "reason": "The summary is too vague to know whether it is a narrow deterministic restriction or broad automatic move denial.",
+      "confidence": "Terse in-game summary"
+    },
+    {
+      "id": 9,
+      "name": "Protean Maxima",
+      "source": "Pokémon Insurgence",
+      "effect": "At the start of the turn, Mega Eevee changes into the Eeveelution matching the selected move's type, gaining that form's typing, stats, and ability.",
+      "recommendation": "Species-specific / watch",
+      "tier": "YELLOW",
+      "reason": "It is deterministic, but a hidden move choice rewrites typing, stats, and ability before actions resolve. Clear visual feedback and narrow distribution are essential.",
+      "confidence": "Verified wiki mechanics"
+    },
+    {
+      "id": 10,
+      "name": "The Look",
+      "source": "Radical Red Showdown mod (CAP/test entry)",
+      "effect": "Opposing Pokémon cannot use the same move twice in a row while the user is active.",
+      "recommendation": "Keep",
+      "tier": "BLUE",
+      "reason": "The restriction is fixed, visible, and predictable once known.",
+      "confidence": "Exact Showdown implementation description"
+    },
+    {
+      "id": 11,
+      "name": "Bioengineering",
+      "source": "Pokémon Exceeded",
+      "effect": "Change form in battle.",
+      "recommendation": "Verify first",
+      "tier": "ORANGE",
+      "reason": "The form-change rule is not described well enough to judge whether the opponent can predict or understand it.",
+      "confidence": "Terse in-game summary"
+    }
+  ]
+}
