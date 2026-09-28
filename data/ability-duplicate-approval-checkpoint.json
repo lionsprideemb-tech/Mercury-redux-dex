@@ -1,0 +1,55 @@
+{
+  "project": "Pokemon Mercury Redux",
+  "kind": "duplicate-ability-approval-checkpoint",
+  "sourceExportedAt": "2026-09-28T17:31:09.680Z",
+  "sourceFile": "mercury-duplicate-ability-approvals.json",
+  "summary": {
+    "totalFamilies": 97,
+    "resolvedCanonical": 94,
+    "merge": 91,
+    "keepOne": 3,
+    "unresolved": 3
+  },
+  "unresolved": [
+    {
+      "familyId": 14,
+      "group": "Blademaster",
+      "status": "pending",
+      "note": "Don’t like either"
+    },
+    {
+      "familyId": 64,
+      "group": "placeholder",
+      "status": "change-name",
+      "note": "They all need a name change"
+    },
+    {
+      "familyId": 101,
+      "group": "Special Huge Power (2x SpA)",
+      "status": "change-effect",
+      "target": "Athenian",
+      "note": "New effect not specified"
+    }
+  ],
+  "keepOne": [
+    {
+      "familyId": 1,
+      "group": "Aerodynamics",
+      "keep": "Elite Redux",
+      "masterRow": 742
+    },
+    {
+      "familyId": 2,
+      "group": "Air Blower",
+      "keep": "Elite Redux",
+      "masterRow": 780
+    },
+    {
+      "familyId": 3,
+      "group": "Amphibious",
+      "keep": "Elite Redux",
+      "masterRow": 757
+    }
+  ],
+  "policy": "Merge decisions use the selected target version as the canonical base when no custom replacement text was supplied. Original research rows remain preserved for provenance until final library compaction."
+}
