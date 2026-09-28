@@ -5,32 +5,13 @@
   "sourceFile": "mercury-duplicate-ability-approvals.json",
   "summary": {
     "totalFamilies": 97,
-    "resolvedCanonical": 94,
+    "resolvedCanonical": 97,
     "merge": 91,
     "keepOne": 3,
-    "unresolved": 3
+    "customResolved": 3,
+    "unresolved": 0
   },
-  "unresolved": [
-    {
-      "familyId": 14,
-      "group": "Blademaster",
-      "status": "pending",
-      "note": "Don’t like either"
-    },
-    {
-      "familyId": 64,
-      "group": "placeholder",
-      "status": "change-name",
-      "note": "They all need a name change"
-    },
-    {
-      "familyId": 101,
-      "group": "Special Huge Power (2x SpA)",
-      "status": "change-effect",
-      "target": "Athenian",
-      "note": "New effect not specified"
-    }
-  ],
+  "unresolved": [],
   "keepOne": [
     {
       "familyId": 1,
@@ -51,5 +32,23 @@
       "masterRow": 757
     }
   ],
-  "policy": "Merge decisions use the selected target version as the canonical base when no custom replacement text was supplied. Original research rows remain preserved for provenance until final library compaction."
+  "policy": "Merge decisions use the selected target version as the canonical base when no custom replacement text was supplied. Original research rows remain preserved for provenance until final library compaction.",
+  "status": "complete",
+  "customResolved": [
+    {
+      "familyId": 14,
+      "group": "Blademaster",
+      "resolution": "Combine into one Blademaster and replace effect with Mercury-designed slicing/contact-response mechanic."
+    },
+    {
+      "familyId": 64,
+      "group": "placeholder",
+      "resolution": "Rename row 48 to Septic Fangs; rename row 262 to Emergency Decoy; delete empty row 354."
+    },
+    {
+      "familyId": 101,
+      "group": "Special Huge Power (2x SpA)",
+      "resolution": "Keep Feline Prowess as 2x SpA; redesign Athenian as tactical status-to-damage sequencing ability."
+    }
+  ]
 }
