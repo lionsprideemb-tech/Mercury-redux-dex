@@ -84,10 +84,10 @@
       "notes": ""
     },
     "14": {
-      "action": "pending",
-      "target": "",
-      "value": "",
-      "notes": "Don’t like either "
+      "action": "change-effect",
+      "target": "0",
+      "value": "Slicing moves deal 20% more damage. Once per turn, after this Pokémon is hit by a contact move, its next slicing move gains +1 priority.",
+      "notes": "Combine both Blademaster entries into one canonical Blademaster with a new Mercury-designed effect."
     },
     "15": {
       "action": "merge",
@@ -386,8 +386,8 @@
     "64": {
       "action": "change-name",
       "target": "0",
-      "value": "",
-      "notes": "They all need a name change "
+      "value": "Master row 48 → Septic Fangs (keep effect: biting moves may badly poison); Master row 262 → Emergency Decoy (keep effect: decoys after weakened); Master row 354 → DELETE (no ability effect).",
+      "notes": "Rename the two real placeholder abilities; delete the empty placeholder entry entirely."
     },
     "65": {
       "action": "merge",
@@ -584,8 +584,9 @@
     "101": {
       "action": "change-effect",
       "target": "0",
-      "value": "",
-      "notes": ""
+      "value": "The first status move this Pokémon uses each time it enters battle gains +1 priority. After that move resolves, its next damaging move deals 30% more damage.",
+      "notes": "Keep Feline Prowess as the 2x SpA mechanic; give Athenian a distinct Mercury-designed tactical effect."
     }
-  }
+  },
+  "finalizedAt": "2026-09-28T17:31:09.680Z"
 }
