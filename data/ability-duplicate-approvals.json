@@ -1,0 +1,591 @@
+{
+  "project": "Pokemon Mercury Redux",
+  "kind": "duplicate-ability-approval",
+  "version": 1,
+  "exportedAt": "2026-09-28T17:31:09.680Z",
+  "importedAt": "2026-09-28T17:31:09.680Z",
+  "approvals": {
+    "1": {
+      "action": "keep-one",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "2": {
+      "action": "keep-one",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "3": {
+      "action": "keep-one",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "4": {
+      "action": "merge",
+      "target": "2",
+      "value": "",
+      "notes": ""
+    },
+    "5": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "6": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "7": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "8": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "9": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "10": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "11": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "12": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "13": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "14": {
+      "action": "pending",
+      "target": "",
+      "value": "",
+      "notes": "Don’t like either "
+    },
+    "15": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "16": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "17": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "18": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "19": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "20": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "21": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "22": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "23": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "24": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "25": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "26": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "27": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "28": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "29": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "30": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "31": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "32": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "33": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "34": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "35": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "36": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "37": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "38": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "39": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "40": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "41": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "42": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "43": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "44": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "45": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "46": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "47": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "48": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "49": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "50": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "51": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "52": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "53": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "54": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "55": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "56": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "57": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "58": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "59": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "60": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "61": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "62": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "63": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "64": {
+      "action": "change-name",
+      "target": "0",
+      "value": "",
+      "notes": "They all need a name change "
+    },
+    "65": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "66": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "67": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "68": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "69": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "70": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "71": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "72": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "73": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "74": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "75": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "76": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "77": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "78": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "79": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "80": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "81": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "82": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "83": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "84": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "85": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "86": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "87": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "88": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "89": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "90": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "91": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "92": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "93": {
+      "action": "merge",
+      "target": "2",
+      "value": "",
+      "notes": ""
+    },
+    "94": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "98": {
+      "action": "merge",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    },
+    "99": {
+      "action": "merge",
+      "target": "1",
+      "value": "",
+      "notes": ""
+    },
+    "101": {
+      "action": "change-effect",
+      "target": "0",
+      "value": "",
+      "notes": ""
+    }
+  }
+}
