@@ -12,7 +12,7 @@ This repository's Pokédex data and older mobile sprite-audit pages remain uncha
 - 1,043 historical GBA approval rows retained (566 original KEEP and 477 original CUT).
 - 94 later GBA decision rows reconciled, including 27 changed decisions.
 - 246 purportedly new sprite imports were already rejected by the existing approval ledger; they are not offered again.
-- 166 currently actionable candidate-art decisions; 33 technical holds.
+- 164 currently actionable candidate-art decisions; 35 technical holds (including two unextracted animation sheets).
 - Fifteen genuine competing-art identities preserved, including options awaiting type/back verification.
 - Five duplicate historical identity keys retained; two contain contradictory decisions (Hydreigon Mega and Tsareena Mega).
 
