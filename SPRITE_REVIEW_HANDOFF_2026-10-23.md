@@ -27,3 +27,7 @@ The Sprites reviewer is authoritative for **candidate artwork selection**, not a
 ## Recovered original user exports
 
 [Evidence snapshot](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/recovered-user-export-decisions-2026-10-23.json) includes 372 DS-art rows, 262 polished first-pass rows, and 19 follow-up rows. Exact previously chosen front+source identities are preserved as decisions, not returned to the user. Eight polished KEEP choices override older GBA CUT records. Current reviewer: **154 actionable, 18 technical holds**.
+
+## Family regroup and uploaded review export (2026-10-23)
+
+The Sprites master reviewer now uses the verified evolution-family metadata and stage ordering (15 corrected display rows; 75 prior family sections reduced to 69). The user's latest iPhone review export, with 166 choices (154 KEEP / 12 CUT), is archived in [review/user-iphone-decisions-2026-10-23.json](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/user-iphone-decisions-2026-10-23.json). Those user decisions are restored to the reviewer, including newer choices for Mega Lucario Z and Mega Golisopod. The existing game and Pokédex integration state remain unchanged; this is display/approval provenance only.
