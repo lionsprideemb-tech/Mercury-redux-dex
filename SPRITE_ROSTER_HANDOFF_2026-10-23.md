@@ -15,7 +15,7 @@ The **source pack**, **credited artist**, **original filename/source label**, **
 ## Preservation
 The previously uploaded user decision file contains **166 decisions: 154 KEEP and 12 CUT**. Of these, 154 match currently actionable cards; older/held entries must remain in exports. Original GBA and DS approval files stay intact. Do not re-ask approvals simply because a back sprite or metadata source is missing.
 
-The 2026-10-23 canonical snapshot contains **154 active review entries, 18 technical holds, and 25 identity/name/family warnings** across active and held records; these counts are overlapping categories and are not final Pokédex species totals.
+The 2026-10-23 canonical snapshot contains **156 active review entries (two additional unreviewed Wailmer/Wailord GBA previews), 16 technical holds, and 25 identity/name/family warnings** across active and held records; these counts are overlapping categories and are not final Pokédex species totals.
 
 ## Implementation gate
 **No source sprites are deleted and no unapproved Pokémon, form, evolution link, or art source is integrated into the Platinum ROM.** A KEEP is an art/roster preference, not proof that a front/back/shiny/icon set is game-ready. Artist-name and family conflicts must be resolved before Pokédex placement and species ID assignment. Non-destructive technical repairs are performed separately.
@@ -24,3 +24,6 @@ The 2026-10-23 canonical snapshot contains **154 active review entries, 18 techn
 The existing sprite reviewer GitHub Actions integrity check passed at run https://github.com/lionsprideemb-tech/Sprites/actions/runs/40026325615 for the primary page and dataset. This is not a proof of a fully compiled ROM or an end-to-end iPhone Pages deployment.
 
 **Dex rule:** Imported maker/region-like labels are not Pokédex names or species entries. Only the verified, user-approved manifest may be used to create/modify canonical display names, types, and evolutionary relationships.
+
+## Subsequent verified approved-source linkage (2026-10-23)
+A further **74 original Reborn / Plates alternate-form front/back pairs** have exact identity-based source-file links, with 69 complete four-view sets and **five missing shiny pairs** (Breloom, Combee, Vespiquen, Dwebble, Crustle alternate forms). This is **not a new approval queue**: all 74 had historical KEEP provenance. See [recovered approved legacy manifest](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/recovered-approved-legacy-pairs-2026-10-23.json) and [read-only reference gallery](https://lionsprideemb-tech.github.io/Sprites/approved-legacy-recovery.html). Source recovery is not DS conversion, icon validation or game integration. Latest Sprites integrity check for this batch: https://github.com/lionsprideemb-tech/Sprites/actions/runs/40031981811.
