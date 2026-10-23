@@ -11,9 +11,9 @@ This repository's Pokédex data and older mobile sprite-audit pages remain uncha
 
 - 1,043 historical GBA approval rows retained (566 original KEEP and 477 original CUT).
 - 94 later GBA decision rows reconciled, including 27 changed decisions.
-- 246 purportedly new sprite imports were already rejected by the existing approval ledger; they are not offered again.
-- 164 currently actionable candidate-art decisions; 35 technical holds (including two unextracted animation sheets).
-- Fifteen genuine competing-art identities preserved, including options awaiting type/back verification.
+- 246 new-import identities matched older rejections; later exported polished choices overrode eight to KEEP and confirmed 238 CUT. All originals are preserved.
+- 154 currently actionable candidate-art decisions; 18 technical holds after recovering the user's exported DS and polished artwork choices.
+- Fifteen genuine competing-art identities identified; ten remaining review options were already decided in the user's DS export and are no longer repeated.
 - Five duplicate historical identity keys retained; two contain contradictory decisions (Hydreigon Mega and Tsareena Mega).
 
 These counts describe overlapping curation ledgers and audits, **not** playable species totals. No Pokédex records, species IDs, evolution methods, type assignments or in-game sprites are altered by this handoff.
@@ -23,3 +23,7 @@ These counts describe overlapping curation ledgers and audits, **not** playable 
 The reviewer autosaves locally and exports `mercury-sprite-decisions-v1` JSON and CSV. The user's exported decisions must be reconciled and committed in Sprites before treating them as approved for this Dex. Historical browser-only selections are not silently imported. Do not replace the existing Pokédex roster simply because a candidate appears in the review dataset.
 
 The Sprites reviewer is authoritative for **candidate artwork selection**, not a direct ROM or Dex-integration authorization.
+
+## Recovered original user exports
+
+[Evidence snapshot](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/recovered-user-export-decisions-2026-10-23.json) includes 372 DS-art rows, 262 polished first-pass rows, and 19 follow-up rows. Exact previously chosen front+source identities are preserved as decisions, not returned to the user. Eight polished KEEP choices override older GBA CUT records. Current reviewer: **154 actionable, 18 technical holds**.
