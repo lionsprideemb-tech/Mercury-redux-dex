@@ -27,3 +27,15 @@ The existing sprite reviewer GitHub Actions integrity check passed at run https:
 
 ## Subsequent verified approved-source linkage (2026-10-23)
 A further **74 original Reborn / Plates alternate-form front/back pairs** have exact identity-based source-file links, with 69 complete four-view sets and **five missing shiny pairs** (Breloom, Combee, Vespiquen, Dwebble, Crustle alternate forms). This is **not a new approval queue**: all 74 had historical KEEP provenance. See [recovered approved legacy manifest](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/recovered-approved-legacy-pairs-2026-10-23.json) and [read-only reference gallery](https://lionsprideemb-tech.github.io/Sprites/approved-legacy-recovery.html). Source recovery is not DS conversion, icon validation or game integration. Latest Sprites integrity check for this batch: https://github.com/lionsprideemb-tech/Sprites/actions/runs/40031981811.
+
+
+## Major reviewer and evidence-triage update — October 23, 2026
+The sole creative review interface remains [Sprites/master-review.html](https://lionsprideemb-tech.github.io/Sprites/master-review.html). It now includes a **read-only Approved source art** mode: all **74 historically approved original GBA-source front/back pairs**, grouped into **39 actual families**, with original labels, real recorded types, front/back and shiny views. Missing-shiny filtering isolates exactly **five** alternate forms (Breloom, Combee, Vespiquen, Dwebble and Crustle). They require original-source recovery and are **not** candidates for a second KEEP vote.
+
+- [Five missing shiny source repairs](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/legacy-approved-artwork-repair-2026-10-23.json)
+- [Grouped identity/family source conflicts](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/identity-family-triage-2026-10-23.json): 19 held source records (10 evolution evidence conflicts, 6 ambiguous artist/region labels, 3 unverified labels). No guessed family or Pokémon ID is promoted to canon.
+- [Regression source checks](https://github.com/lionsprideemb-tech/Sprites/blob/main/review/tests/master-review-integrity.cjs) and [GitHub Actions workflow](https://github.com/lionsprideemb-tech/Sprites/blob/main/.github/workflows/sprite-review-integrity.yml).
+
+The **166 original iPhone decisions (154 KEEP / 12 CUT)** are untouched. Backup imports now **merge** rather than discard absent votes, preserve non-current identifiers, and save unresolved technical-hold identity corrections. A GitHub JSON export is still required before review choices become committed project state; the Pages reviewer does not push to GitHub itself.
+
+**Safety:** This was a reviewer, metadata, and test update. The 74 sources remain **GBA originals, not certified DS sprite conversions**. There have been no edits to the ROM, gameplay, Pokédex species registry, stored historical votes, or artwork files. Do not infer a checked GitHub Actions run from the existence of the workflow alone.
