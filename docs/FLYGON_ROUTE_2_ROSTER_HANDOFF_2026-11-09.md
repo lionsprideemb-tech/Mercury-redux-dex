@@ -7,7 +7,7 @@ Canonical planning source: [Sprites/review/flygon-roster-plan-2026-11-09.json](h
 **Integration rules**
 - Keep ordinary Flygon evolution and canonical typing unchanged.
 - Keep one regular Flygon Mega slot; older archived approvals for multiple competing Mega artworks are not approval for multiple separate Mega identities. The previously approved Elite Redux `flygon-mega` is the baseline candidate pending full native graphics/runtime validation.
-- Plan just three additional Delta species/form entries, **not yet instantiated**. Delta Flygon's target types are Bug/Ground. Early-stage Delta types and all three source-specific art selections remain unresolved; do not invent them.
+- Plan just three additional Delta species/form entries, **not yet instantiated**. Delta Flygon's target types are Bug/Ground. Delta Trapinch and Delta Vibrava must each include **Bug** (mono Bug or Bug combined with another vanilla type); neither has to be Bug/Ground. The secondary types (if any) and all three source-specific art selections remain unresolved; do not invent them.
 - Do not import `flygon-redux-b` or `flygon-redux-b-mega` into the Dex/ROM, despite their old art KEEP votes. Both source sprite folders remain preserved and their votes remain historical truth.
 - The generic `ER125_REDUX_TO_DELTA_MAP.csv` rows for `SPECIES_FLYGON_REDUX`, `SPECIES_FLYGON_REDUX_MEGA`, `SPECIES_TRAPINCH_REDUX`, and `SPECIES_VIBRAVA_REDUX` are **superseded for this family**. Do not promote previously rejected `flygon-redux`, `flygon-redux-mega`, `trapinch-redux` or undecided `vibrava-redux` as Bug/Ground art.
 - New Delta stage allocation, evolution routing, sprite icons, 4bpp palette and ROM work require separate quality/collision/build checks.
