@@ -67,6 +67,8 @@ jobs:
             --upstream external/pokeplatinum \
             --donor external/hg-engine \
             --output qa-delta-output
+      - name: Publish exact read-only findings in workflow log
+        run: cat qa-delta-output/audit.json
       - name: Upload machine-readable findings and summary
         if: always()
         uses: actions/upload-artifact@v4
