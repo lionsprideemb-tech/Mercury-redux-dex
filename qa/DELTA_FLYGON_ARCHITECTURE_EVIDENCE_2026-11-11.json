@@ -1,0 +1,660 @@
+{
+  "report": "Mercury Redux Delta architecture QA",
+  "date": "2026-11-11",
+  "scope": "read-only static verification",
+  "workflow": "https://github.com/lionsprideemb-tech/Mercury-redux-dex/actions/runs/43103979480",
+  "workflow_conclusion": "success",
+  "snapshots": {
+    "sprites": "f15c4671bf7afb15450fc7801bde17aefcdc4f7e",
+    "dex_main": "faa7cb4016d8030fb4661b49114352d79cac7944",
+    "platinum_main": "5525e961a1fb98c62bd53bc4a27b0276a39f6719",
+    "pret_pokeplatinum": "c248fb3f8cc9934ded800e489567c5c0eeee92eb",
+    "hg_engine": "5157c501dc0e6f88ef1654ab121352a5cc9ed7de"
+  },
+  "audit": {
+    "schema": "mercury-delta-flygon-architecture-audit-v1",
+    "mode": "READ_ONLY__NO_GAME_OR_DEX_EDITS",
+    "dex": {
+      "index_sha256": "faa3a6ce72ce73bf972f94675765f5abbda84e6dea496c38b1aee228d01886fb",
+      "shards": 17,
+      "overlays": 12,
+      "base_rows_before_overlays": 1603,
+      "effective_rows": 1599,
+      "declared_rows": 1599,
+      "effective_matches_declared": true,
+      "flygon_family_related_records": [
+        {
+          "key": "SPECIES_TRAPINCH",
+          "id": 328,
+          "reviewId": null,
+          "displayName": "Trapinch",
+          "name": "Trapinch",
+          "basePokemon": "Trapinch",
+          "sourceConstant": "SPECIES_TRAPINCH",
+          "publicConstant": "SPECIES_TRAPINCH",
+          "constant": "SPECIES_TRAPINCH",
+          "nationalDex": 328,
+          "types": [
+            "Ground"
+          ],
+          "evolutions": [
+            {
+              "method": "EVO_LEVEL",
+              "param": "35",
+              "target": "SPECIES_VIBRAVA"
+            }
+          ],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Core Canonical",
+          "rosterGroup": "Canonical"
+        },
+        {
+          "key": "SPECIES_VIBRAVA",
+          "id": 329,
+          "reviewId": null,
+          "displayName": "Vibrava",
+          "name": "Vibrava",
+          "basePokemon": "Vibrava",
+          "sourceConstant": "SPECIES_VIBRAVA",
+          "publicConstant": "SPECIES_VIBRAVA",
+          "constant": "SPECIES_VIBRAVA",
+          "nationalDex": 329,
+          "types": [
+            "Ground",
+            "Dragon"
+          ],
+          "evolutions": [
+            {
+              "method": "EVO_LEVEL",
+              "param": "45",
+              "target": "SPECIES_FLYGON"
+            }
+          ],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Core Canonical",
+          "rosterGroup": "Canonical"
+        },
+        {
+          "key": "SPECIES_FLYGON",
+          "id": 330,
+          "reviewId": null,
+          "displayName": "Flygon",
+          "name": "Flygon",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON",
+          "publicConstant": "SPECIES_FLYGON",
+          "constant": "SPECIES_FLYGON",
+          "nationalDex": 330,
+          "types": [
+            "Ground",
+            "Dragon"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Core Canonical",
+          "rosterGroup": "Canonical"
+        },
+        {
+          "key": "R0489",
+          "id": 1816,
+          "reviewId": "R0489",
+          "displayName": "Trapinch Redux",
+          "name": "Trapinch Rdx",
+          "basePokemon": "Trapinch",
+          "sourceConstant": "SPECIES_TRAPINCH_REDUX",
+          "publicConstant": "SPECIES_TRAPINCH_REDUX",
+          "constant": "SPECIES_TRAPINCH_REDUX",
+          "nationalDex": null,
+          "types": [
+            "Ice",
+            "Bug"
+          ],
+          "evolutions": [
+            {
+              "method": "EVO_LEVEL",
+              "param": "18",
+              "target": "SPECIES_VIBRAVA_REDUX"
+            }
+          ],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Delta family candidate",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0491",
+          "id": 1817,
+          "reviewId": "R0491",
+          "displayName": "Vibrava Redux",
+          "name": "Vibrava Rdx",
+          "basePokemon": "Vibrava",
+          "sourceConstant": "SPECIES_VIBRAVA_REDUX",
+          "publicConstant": "SPECIES_VIBRAVA_REDUX",
+          "constant": "SPECIES_VIBRAVA_REDUX",
+          "nationalDex": null,
+          "types": [
+            "Ice",
+            "Bug"
+          ],
+          "evolutions": [
+            {
+              "method": "EVO_LEVEL",
+              "param": "36",
+              "target": "SPECIES_FLYGON_REDUX"
+            }
+          ],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Delta family candidate",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0493",
+          "id": 1638,
+          "reviewId": "R0493",
+          "displayName": "Flygon Redux",
+          "name": "Flygon Rdx",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_REDUX",
+          "publicConstant": "SPECIES_FLYGON_REDUX",
+          "constant": "SPECIES_FLYGON_REDUX",
+          "nationalDex": null,
+          "types": [
+            "Ice",
+            "Bug"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Delta family candidate",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0494",
+          "id": 2081,
+          "reviewId": "R0494",
+          "displayName": "Flygon Redux B",
+          "name": "Flygon-RB",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_REDUX_B",
+          "publicConstant": "SPECIES_FLYGON_REDUX_B",
+          "constant": "SPECIES_FLYGON_REDUX_B",
+          "nationalDex": null,
+          "types": [
+            "Electric",
+            "Dragon"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Delta family candidate",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0495",
+          "id": 1692,
+          "reviewId": "R0495",
+          "displayName": "Flygon Mega",
+          "name": "Flygon M",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_MEGA",
+          "publicConstant": "SPECIES_FLYGON_MEGA",
+          "constant": "SPECIES_FLYGON_MEGA",
+          "nationalDex": null,
+          "types": [
+            "Ground",
+            "Bug"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Custom Mega",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0496",
+          "id": 2082,
+          "reviewId": "R0496",
+          "displayName": "Flygon Redux B Mega",
+          "name": "Flygon-RB-M",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_REDUX_B_MEGA",
+          "publicConstant": "SPECIES_FLYGON_REDUX_B_MEGA",
+          "constant": "SPECIES_FLYGON_REDUX_B_MEGA",
+          "nationalDex": null,
+          "types": [
+            "Electric",
+            "Dragon"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Mega Delta",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0497",
+          "id": 1632,
+          "reviewId": "R0497",
+          "displayName": "Flygon Redux Mega",
+          "name": "Flygon Rdx M",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_REDUX_MEGA",
+          "publicConstant": "SPECIES_FLYGON_REDUX_MEGA",
+          "constant": "SPECIES_FLYGON_REDUX_MEGA",
+          "nationalDex": null,
+          "types": [
+            "Ice",
+            "Bug"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Mega Delta",
+          "rosterGroup": "Addition"
+        },
+        {
+          "key": "R0498",
+          "id": 1888,
+          "reviewId": "R0498",
+          "displayName": "Platinum Redux Flygon",
+          "name": "Flygon",
+          "basePokemon": "Flygon",
+          "sourceConstant": "SPECIES_FLYGON_PLATINUM",
+          "publicConstant": "SPECIES_FLYGON_PLATINUM",
+          "constant": "SPECIES_FLYGON_PLATINUM",
+          "nationalDex": null,
+          "types": [
+            "Bug",
+            "Dragon"
+          ],
+          "evolutions": [],
+          "integrationState": "SOURCE_BOUND",
+          "classification": "Standalone Delta candidate",
+          "rosterGroup": "Addition"
+        }
+      ],
+      "duplicate_numeric_site_ids": [
+        {
+          "id": 1581,
+          "records": [
+            {
+              "key": "R0077",
+              "id": 1581,
+              "reviewId": "R0077",
+              "displayName": "Arcanine Mega",
+              "name": "Arcanine M",
+              "basePokemon": "Arcanine",
+              "sourceConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "publicConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "constant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Grass"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0078",
+              "id": 1581,
+              "reviewId": "R0078",
+              "displayName": "Arcanine Mega",
+              "name": "Arcanine M",
+              "basePokemon": "Arcanine",
+              "sourceConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "publicConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "constant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Grass"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 1751,
+          "records": [
+            {
+              "key": "R0901",
+              "id": 1751,
+              "reviewId": "R0901",
+              "displayName": "Toxtricity Mega",
+              "name": "Toxtricity M",
+              "basePokemon": "Toxtricity",
+              "sourceConstant": "SPECIES_TOXTRICITY_MEGA",
+              "publicConstant": "SPECIES_TOXTRICITY_MEGA",
+              "constant": "SPECIES_TOXTRICITY_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Poison"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0902",
+              "id": 1751,
+              "reviewId": "R0902",
+              "displayName": "Toxtricity Mega",
+              "name": "Toxtricity M",
+              "basePokemon": "Toxtricity",
+              "sourceConstant": "SPECIES_TOXTRICITY_MEGA",
+              "publicConstant": "SPECIES_TOXTRICITY_MEGA",
+              "constant": "SPECIES_TOXTRICITY_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Poison"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 1761,
+          "records": [
+            {
+              "key": "R0737",
+              "id": 1761,
+              "reviewId": "R0737",
+              "displayName": "Reuniclus Mega",
+              "name": "Reuniclus M",
+              "basePokemon": "Reuniclus",
+              "sourceConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "publicConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "constant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Water"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0738",
+              "id": 1761,
+              "reviewId": "R0738",
+              "displayName": "Reuniclus Mega",
+              "name": "Reuniclus M",
+              "basePokemon": "Reuniclus",
+              "sourceConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "publicConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "constant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Water"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        }
+      ],
+      "duplicate_keys": [],
+      "watched_site_ids": [
+        {
+          "id": 1581,
+          "records": [
+            {
+              "key": "R0077",
+              "id": 1581,
+              "reviewId": "R0077",
+              "displayName": "Arcanine Mega",
+              "name": "Arcanine M",
+              "basePokemon": "Arcanine",
+              "sourceConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "publicConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "constant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Grass"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0078",
+              "id": 1581,
+              "reviewId": "R0078",
+              "displayName": "Arcanine Mega",
+              "name": "Arcanine M",
+              "basePokemon": "Arcanine",
+              "sourceConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "publicConstant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "constant": "SPECIES_ARCANINE_MEGA_REDUX",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Grass"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 1751,
+          "records": [
+            {
+              "key": "R0901",
+              "id": 1751,
+              "reviewId": "R0901",
+              "displayName": "Toxtricity Mega",
+              "name": "Toxtricity M",
+              "basePokemon": "Toxtricity",
+              "sourceConstant": "SPECIES_TOXTRICITY_MEGA",
+              "publicConstant": "SPECIES_TOXTRICITY_MEGA",
+              "constant": "SPECIES_TOXTRICITY_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Poison"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0902",
+              "id": 1751,
+              "reviewId": "R0902",
+              "displayName": "Toxtricity Mega",
+              "name": "Toxtricity M",
+              "basePokemon": "Toxtricity",
+              "sourceConstant": "SPECIES_TOXTRICITY_MEGA",
+              "publicConstant": "SPECIES_TOXTRICITY_MEGA",
+              "constant": "SPECIES_TOXTRICITY_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Poison"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 1761,
+          "records": [
+            {
+              "key": "R0737",
+              "id": 1761,
+              "reviewId": "R0737",
+              "displayName": "Reuniclus Mega",
+              "name": "Reuniclus M",
+              "basePokemon": "Reuniclus",
+              "sourceConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "publicConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "constant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Water"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            },
+            {
+              "key": "R0738",
+              "id": 1761,
+              "reviewId": "R0738",
+              "displayName": "Reuniclus Mega",
+              "name": "Reuniclus M",
+              "basePokemon": "Reuniclus",
+              "sourceConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "publicConstant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "constant": "SPECIES_REUNICLUS_REDUX_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Fire",
+                "Water"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Custom Mega",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 2081,
+          "records": [
+            {
+              "key": "R0494",
+              "id": 2081,
+              "reviewId": "R0494",
+              "displayName": "Flygon Redux B",
+              "name": "Flygon-RB",
+              "basePokemon": "Flygon",
+              "sourceConstant": "SPECIES_FLYGON_REDUX_B",
+              "publicConstant": "SPECIES_FLYGON_REDUX_B",
+              "constant": "SPECIES_FLYGON_REDUX_B",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Dragon"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Delta family candidate",
+              "rosterGroup": "Addition"
+            }
+          ]
+        },
+        {
+          "id": 2082,
+          "records": [
+            {
+              "key": "R0496",
+              "id": 2082,
+              "reviewId": "R0496",
+              "displayName": "Flygon Redux B Mega",
+              "name": "Flygon-RB-M",
+              "basePokemon": "Flygon",
+              "sourceConstant": "SPECIES_FLYGON_REDUX_B_MEGA",
+              "publicConstant": "SPECIES_FLYGON_REDUX_B_MEGA",
+              "constant": "SPECIES_FLYGON_REDUX_B_MEGA",
+              "nationalDex": null,
+              "types": [
+                "Electric",
+                "Dragon"
+              ],
+              "evolutions": [],
+              "integrationState": "SOURCE_BOUND",
+              "classification": "Mega Delta",
+              "rosterGroup": "Addition"
+            }
+          ]
+        }
+      ],
+      "site_id_is_not_platinum_species_id": true
+    },
+    "sprites": {
+      "historical_ledger_sha256": "909fa0ae7edaa4373fd1207249db8e5e1b713f7c27272bc58b7d65c27e8eeba8",
+      "historical_votes": 166,
+      "historical_keep": 154,
+      "historical_cut": 12,
+      "vote_entries_count": 166,
+      "roster_plan_sha256": "c96459f41faab43148c4ce007a901e83828e985fe7fe33d5237cf1897ab9e73e",
+      "planned_delta_count": 3,
+      "retired_roster_identities": [
+        "flygon-redux-b",
+        "flygon-redux-b-mega"
+      ]
+    },
+    "platinum": {
+      "registry_sha256": "050f21134ba288bfd7b0d17751bb6b25548ec3acae74b867fde7bccbea7cb435",
+      "canonical_registry_count": 1025,
+      "unique_canonical_names": 1025,
+      "tail": [
+        "SPECIES_IRON_CROWN",
+        "SPECIES_TERAPAGOS",
+        "SPECIES_PECHARUNT"
+      ],
+      "delta_species_constants_present": [],
+      "species_u16_not_free_id_proof": true,
+      "pinned_icon_source_sha256": "2cce1cc299e8e66d0aac26cf9a0070f7eebb113952a799016527b172afea0710",
+      "pinned_icon_form_routes": [
+        "SPECIES_BURMY",
+        "SPECIES_DEOXYS",
+        "SPECIES_GASTRODON",
+        "SPECIES_GIRATINA",
+        "SPECIES_ROTOM",
+        "SPECIES_SHAYMIN",
+        "SPECIES_SHELLOS",
+        "SPECIES_UNOWN",
+        "SPECIES_WORMADAM"
+      ],
+      "pinned_icon_form_route_has_flygon_family": false,
+      "pinned_pokemon_form_five_bits": true,
+      "icon_source_uses_palette_lookup": true,
+      "icon_source_fallback_unknown_form": true,
+      "donor_palette_source_sha256": "bb406fe743b871e0402b907c08cb11c774b3cb124f7d30546198a91cadcbd442",
+      "donor_explicit_palette_assignments": 1535,
+      "donor_palette_assignments_by_bank": {
+        "0": 844,
+        "1": 310,
+        "2": 381
+      },
+      "donor_species_only_explicit_assignments": 1490,
+      "donor_species_palette_counts": {
+        "0": 803,
+        "1": 306,
+        "2": 381
+      },
+      "bank3_no_donor_assignments": true,
+      "bank3_runtime_ui_safe": "UNPROVEN"
+    },
+    "notes": [
+      "Dex row id/reviewId, even when numeric, does NOT allocate a native DS species ID.",
+      "Retired source-art KEEP votes must remain distinct from current playable roster exclusions.",
+      "Absence of donor bank-3 assignments is not proof that all menu/VRAM contexts load or preserve a fourth shared icon palette.",
+      "This audit does not allocate IDs, alter Dex overlays, approve sprites or certify emulator behavior."
+    ]
+  }
+}
