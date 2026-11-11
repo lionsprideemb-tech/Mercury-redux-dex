@@ -1,0 +1,77 @@
+name: Delta Flygon collision-safe architecture QA (read-only)
+on:
+  push:
+    branches:
+      - qa/delta-flygon-architecture-20261111
+    paths:
+      - tools/audit_delta_flygon_architecture.py
+      - .github/workflows/delta-flygon-architecture-qa.yml
+      - qa/DELTA_FLYGON_ARCHITECTURE_2026-11-11.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout isolated Dex QA branch
+        uses: actions/checkout@v4
+      - name: Checkout sprite vote and roster plan files (no modifications)
+        uses: actions/checkout@v4
+        with:
+          repository: lionsprideemb-tech/Sprites
+          ref: f15c4671bf7afb15450fc7801bde17aefcdc4f7e
+          path: external/Sprites
+          sparse-checkout: |
+            review/user-iphone-decisions-2026-10-23.json
+            review/flygon-roster-plan-2026-11-09.json
+          sparse-checkout-cone-mode: false
+      - name: Checkout Platinum canonical registry (no modifications)
+        uses: actions/checkout@v4
+        with:
+          repository: lionsprideemb-tech/platinum-modern-ds
+          ref: 5525e961a1fb98c62bd53bc4a27b0276a39f6719
+          path: external/platinum-modern-ds
+          sparse-checkout: |
+            data/canonical_species_1025.txt
+          sparse-checkout-cone-mode: false
+      - name: Checkout exact pinned original Platinum icon code
+        uses: actions/checkout@v4
+        with:
+          repository: pret/pokeplatinum
+          ref: c248fb3f8cc9934ded800e489567c5c0eeee92eb
+          path: external/pokeplatinum
+          sparse-checkout: |
+            src/pokemon_icon.c
+            include/struct_defs/pokemon.h
+          sparse-checkout-cone-mode: false
+      - name: Checkout exact pinned donor palette assignment file
+        uses: actions/checkout@v4
+        with:
+          repository: BluRosie/hg-engine
+          ref: 5157c501dc0e6f88ef1654ab121352a5cc9ed7de
+          path: external/hg-engine
+          sparse-checkout: |
+            data/IconPaletteTable.c
+          sparse-checkout-cone-mode: false
+      - name: Compile QA script
+        run: python3 -m py_compile tools/audit_delta_flygon_architecture.py
+      - name: Compute cross-repository collision and palette evidence
+        run: |
+          python3 tools/audit_delta_flygon_architecture.py \
+            --sprites external/Sprites \
+            --platinum external/platinum-modern-ds \
+            --upstream external/pokeplatinum \
+            --donor external/hg-engine \
+            --output qa-delta-output
+      - name: Upload machine-readable findings and summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mercury-delta-flygon-architecture-qa-not-rom
+          path: qa-delta-output/
+          if-no-files-found: warn
+          retention-days: 30
